@@ -7,6 +7,7 @@ import { ProfileContext } from "./context";
 
 import Axios from 'axios'
 import FileDownload from 'js-file-download';
+import { useAuth } from '../../../model/hooks/auth';
 
 
 export default function order() {
@@ -15,6 +16,9 @@ export default function order() {
   const [cookies] = useCookies(['Jwt']);
   const router = useRouter()
   const { openMsgPage } = useContext(ProfileContext)
+
+  const [loadPageData, setloadPageData] = useState(true);
+  useAuth({onlyAdmin: false, setloadPageData: setloadPageData })
 
   const { pre, isLoding } = getRequest({ Jwt: cookies.Jwt });
 
@@ -59,12 +63,12 @@ export default function order() {
 
       FileDownload(response.data, name);
 
-      //    setISdONE([true, 'جاري تحميل الملف'])
+      //    setAlertMesssage([true, 'جاري تحميل الملف'])
       document.documentElement.scrollTop = 0;
 
     }).catch(err => {
       console.log(err)
-      //  setISdONE([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
+      //  setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0;
     });
 
@@ -73,13 +77,6 @@ export default function order() {
   const RequstCard = ({ order, setdelteitem, UpdateOrder }) => {
 
 
-    // const { data, error } = useSWR({ url: '/api/getImgeRequest', method: "SHOW", data: { id: order.id } }, fetcher);
-
-    useEffect(() => {
-      //    setimges(data)
-    }, [])
-
-    console.log(order)
     if (!order) return <div></div>;
 
     return <div    
@@ -104,10 +101,10 @@ export default function order() {
         <div className=" d-flex justify-content-between">
           <p className="card-text">تفاصيل إضافية : {order.Request_des}</p>
 
-          {!order.isDone ?
+          {!order.AlertMesssage ?
             <button
-              onClick={() => openMsgPage(order.service.id, order.id)}
-              type="button" class="btn btn-sm btn-primary position-relative">
+              onClick={() => openMsgPage(order.id)}
+              type="button" class="btn btn-sm  btn-outline-success position-relative">
               رسائل
               {order.msg ?
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -124,7 +121,7 @@ export default function order() {
 
           <div>
             <button
-              className="btn m-2 btn-primary btn-sm"
+              className="btn m-2  btn-outline-success btn-sm"
               type="button"
               data-bs-toggle="collapse"
               data-bs-target={`#collapseExample${order.id}`}
@@ -138,7 +135,7 @@ export default function order() {
                 </p>
                 {order.done_img ?
                   <p>
-                    <button onClick={() => Download(order.done_imge.id, order.done_imge.File_name)} className="btn btn-primary btn-sm " >تحميل</button>
+                    <button onClick={() => Download(order.done_imge.id, order.done_imge.File_name)} className="btn  btn-outline-success btn-sm " >تحميل</button>
 
                   </p> : ""}
               </div>
@@ -149,12 +146,8 @@ export default function order() {
 
       </div>
 
-      {
-        // <p>الملفات المرفقة:</p>
-        // </div>
-        // <div> <LoadImage data={imges} ></LoadImage></div>
-      }
-      {order.isDone !== 0 ? '' :
+      
+      {order.idDone !== 0 ? '' :
         <div className="card-footer text-muted">
           <button
           id='cy-update-order'
@@ -173,8 +166,8 @@ export default function order() {
 
   }
 
-
-  if (isLoding) {
+ 
+  if (isLoding || loadPageData) {
     return <div className="text-center py-5">
       <div className="spinner-border" role="status">
         <span className="visually-hidden">Loading...</span>
@@ -203,7 +196,7 @@ export default function order() {
               طلبات تمت معالجتها
             </button>
           </h4>
-          <div id="collapseTwo" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+          <div id="collapseTwo" className="accordion-collapse collapse " aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div className="accordion-body">
               {!showOreders(PendingOrder, 1) ? <p>لا يوجد طلبات</p> : showOreders(PendingOrder, 1).reverse().map(order =>
                 <RequstCard key={order.id} order={order} ></RequstCard>
@@ -300,7 +293,7 @@ const Model = ({ id, deleteOrder, order }) => {
             data-test='cy-delete-order'
 
             data-bs-dismiss="modal" type="button"
-            className="btn btn-primary">حذف</button>
+            className="btn  btn-outline-success">حذف</button>
         </div>
       </div>
     </div>

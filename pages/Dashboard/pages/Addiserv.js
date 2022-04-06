@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react"
 import { useCookies } from "react-cookie";
 import fetcher from "../../../model/fetcher";
+import { useAuth } from "../../../model/hooks/auth"
+
 
 import axios from "axios";
 import Image from 'next/image'
 import useSWR from "swr";
 import FilesManger from "../../../components/FilesManger";
+
 
 export default function serv() {
   const [cookies] = useCookies(['Jwt']);
@@ -19,18 +22,21 @@ export default function serv() {
   const [Description, setDescription] = useState('');
   const [Requirement, setRequirement] = useState('');
   const [LastMainCat, setMainCat] = useState([]);
-  const [isLoding, setisLoding] = useState(false);
-  const [isDone, setISdONE] = useState([null, ""]);
+  const [isLoding, setIsLoding] = useState(false);
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""]);
 
-  const router = useRouter();
-
-
-  const [AllError, setAllError] = useState({
+  const [filedsErrors, setfiledsErrors] = useState({
     Title: '',
     Description: "",
     Requirement: "",
     selectedCat: ""
   })
+
+  const [loadPageData, setloadPageData] = useState(true);
+
+
+  useAuth({onlyAdmin: true, setloadPageData: setloadPageData })
+
   const { cat } = LoadCat();
 
   const catTreeBulider = (KidsMainCat, MainCat, Adress) => {
@@ -61,8 +67,8 @@ export default function serv() {
 
   const getCatChilderen = (MainCat) => {
 
-    let ff = cat.map(item => { if (item.Parent_Categories == MainCat.id) { return item } });
-    return ff.filter(i => i !== undefined)
+    let getCatChilderen = cat.map(item => { if (item.Parent_Categories == MainCat.id) { return item } });
+    return getCatChilderen.filter(i => i !== undefined)
 
 
   }
@@ -78,12 +84,6 @@ export default function serv() {
 
   useEffect(() => {
 
-
-    if (typeof document !== undefined) {
-
-      require('bootstrap/dist/js/bootstrap')
-    }
-
     let MainCat = !cat ? [] : cat.filter(element => element.Parent_Categories == 0);
 
     let Adress = [...MainCat]
@@ -97,21 +97,21 @@ export default function serv() {
 
 
   const SaveServ = (e) => {
-    setisLoding(true)
+    setIsLoding(true)
     e.preventDefault();
 
-    let allerror = { ...AllError };
+    let filedsErrors = { ...filedsErrors };
 
-    for (const cc in allerror) {
-      allerror[cc] = ""
+    for (const cc in filedsErrors) {
+      filedsErrors[cc] = ""
     }
 
-    if (!Title) allerror.Title = "  العنوان مطلوب  "
-    if (!Description) allerror.Description = "  الوصف مطلوب  "
-    if (!Requirement) allerror.Requirement = "  متطلبات الخدمة مطلوب  "
-    if (!selectedCat) allerror.selectedCat = "  يجب عايك تختيار تصنيف  "
+    if (!Title) filedsErrors.Title = "  العنوان مطلوب  "
+    if (!Description) filedsErrors.Description = "  الوصف مطلوب  "
+    if (!Requirement) filedsErrors.Requirement = "  متطلبات الخدمة مطلوب  "
+    if (!selectedCat) filedsErrors.selectedCat = "  يجب عايك تختيار تصنيف  "
 
-    setAllError(allerror);
+    setfiledsErrors(filedsErrors);
 
     if (!Title || !Description || !Requirement || !selectedCat) return
 
@@ -128,8 +128,8 @@ export default function serv() {
       }
     })
       .then(data => {
-        setisLoding(false)
-        setISdONE([true, 'تم إصافة البيانات '])
+        setIsLoding(false)
+        setAlertMesssage([true, 'تم إصافة البيانات '])
         document.documentElement.scrollTop = 0;
   
         
@@ -141,18 +141,18 @@ export default function serv() {
         if (typeof thedataretrv === 'object' && thedataretrv !== null) {
           for (const property in thedataretrv) {
 
-            allerror[property] = thedataretrv[property].toString();
+            filedsErrors[property] = thedataretrv[property].toString();
 
           }
 
-          setAllError({ ...allerror });
+          setfiledsErrors({ ...filedsErrors });
         }
 
 
 
-        setisLoding(false)
+        setIsLoding(false)
 
-        setISdONE([false, 'حدث خطاء الرجاء المحاولة مرة اخرى'])
+        setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة مرة اخرى'])
 
         document.documentElement.scrollTop = 0
 
@@ -183,7 +183,6 @@ export default function serv() {
 
   const setrequired = (e) => {
 
-console.log(requpl)
     let newarr = [...requpl];
 
     let ddv = newarr.find(item => item[0] == e[0])
@@ -249,17 +248,25 @@ console.log(requpl)
     setcurrentImge(0)
   }
 
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
 
   return <>
     <div className="col-md-7 col-lg-8">
       <h4 className="mb-3">
         بيانات الخدمة المقدمة    </h4>
-      {isDone[0] == null ? '' :
-        <div className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
-          {isDone[1]}
+      {AlertMesssage[0] == null ? '' :
+        <div className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
+          {AlertMesssage[1]}
 
           <button type="button" className="btn-close"
-            onClick={() => setISdONE([null, ''])}
+            onClick={() => setAlertMesssage([null, ''])}
             aria-label="قريب"></button>
         </div>}
       <form onSubmit={(e) => SaveServ(e)}
@@ -273,14 +280,14 @@ console.log(requpl)
             <input type="email"
               onChange={(e) => setTitle(e.target.value)}
 
-              className={` text-start form-control ${AllError.Title ? 'is-invalid' : ''}`}
+              className={` text-start form-control ${filedsErrors.Title ? 'is-invalid' : ''}`}
 
               id="email"
               placeholder="اسم الخدمة">
             </input>
 
             <div className="invalid-feedback">
-              {AllError.Title}
+              {filedsErrors.Title}
             </div>
 
           </div>
@@ -289,12 +296,12 @@ console.log(requpl)
             <label htmlFor="address" className="form-label">تفاصيل الخدمة</label>
             <textarea rows="5"
               onChange={(e) => setDescription(e.target.value)}
-              className={`text-start form-control ${AllError.Description ? 'is-invalid' : ''}`}
+              className={`text-start form-control ${filedsErrors.Description ? 'is-invalid' : ''}`}
 
               id="address" placeholder="تفاصيل الخدمة" >
             </textarea>
             <div className="invalid-feedback">
-              {AllError.Description}
+              {filedsErrors.Description}
             </div>
           </div>
 
@@ -302,12 +309,12 @@ console.log(requpl)
             <label htmlFor="address" className="form-label">متطلبات الخدمة</label>
             <textarea rows="5"
               onChange={(e) => setRequirement(e.target.value)}
-              className={`form-control text-start ${AllError.Requirement ? 'is-invalid' : ''}`}
+              className={`form-control text-start ${filedsErrors.Requirement ? 'is-invalid' : ''}`}
 
               id="address" placeholder="متطلبات الخدمة" required>
             </textarea>
             <div className="invalid-feedback">
-              {AllError.Requirement}
+              {filedsErrors.Requirement}
             </div>
           </div>
           <div className="col-12 ">
@@ -342,7 +349,7 @@ console.log(requpl)
 
               <aside id="cat"
 
-                className={`bd-aside  overflow-auto CatBox sticky-xl-top text-muted align-self-start mb-3 mb-xl-5 px-2 ${AllError.selectedCat ? 'is-invalid' : ''}`}
+                className={`bd-aside  overflow-auto CatBox sticky-xl-top text-muted align-self-start mb-3 mb-xl-5 px-2 ${filedsErrors.selectedCat ? 'is-invalid' : ''}`}
 
               >
 
@@ -350,7 +357,7 @@ console.log(requpl)
 
               </aside>
               <div className="invalid-feedback">
-                {AllError.selectedCat}
+                {filedsErrors.selectedCat}
               </div>
             </div>
 
@@ -368,7 +375,7 @@ console.log(requpl)
                 onClick={(e) => handelOpenModel(e)}
 
                 data-bs-toggle="modal" data-bs-target="#exampleModalCenteredScrollable"
-                className="mt-2 btn btn-primary">إضافة ملف محفوظ</button>
+                className="mt-2 btn  btn-outline-success">إضافة ملف محفوظ</button>
             </div>
 
 
@@ -383,7 +390,7 @@ console.log(requpl)
         <button
           disabled={isLoding}
 
-          className="w-100 btn btn-primary btn-lg" type="submit">
+          className="w-100 btn  btn-outline-success btn-lg" type="submit">
           {isLoding ?
             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             :
@@ -409,7 +416,7 @@ console.log(requpl)
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-            <button type="button" onClick={() => closeMdeol()} data-bs-dismiss="modal" className="btn btn-primary">أضف الملف</button>
+            <button type="button" onClick={() => closeMdeol()} data-bs-dismiss="modal" className="btn  btn-outline-success">أضف الملف</button>
           </div>
         </div>
       </div>

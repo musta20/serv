@@ -2,8 +2,9 @@
 
 import fetcher from "../../../model/fetcher";
 import { useCookies } from 'react-cookie';
+import { useAuth } from "../../../model/hooks/auth"
+
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 
 
 
@@ -21,32 +22,25 @@ export default function Msg({ ReqId, OrderId }) {
 
   const { setthispage } = useContext(DashboardContext);
 
-  const [FormFiles, setFormFiles] = useState([]);
-
-  const [allmessage, setmessage] = useState([]);
-
-  const [orderId, setorderId] = useState(0);
-
-  const [currentmessage, setmessagecurrent] = useState([]);
-  const [isLoding, setisLoding] = useState(false);
-  const [isDone, setISdONE] = useState([null, ""])
+  const [isLoding, setIsLoding] = useState(true);
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
   const [RequestDes, setRequestDes] = useState('');
 
   const [endMessage, setEnDMessage] = useState('');
   const [endimg, setEndimg] = useState('');
 
-
-
   const [cookies] = useCookies(['Jwt']);
-  const router = useRouter()
+  
+  const [loadPageData, setloadPageData] = useState(true);
 
+
+  useAuth({onlyAdmin: true, setloadPageData: setloadPageData })
 
   const { data } = RequirementUploader(ReqId)
   const { orid } = OrderData(OrderId, cookies.Jwt)
   const { orimg } = OrderImgeData(OrderId, cookies.Jwt)
   const { files } = getFiles(OrderId, cookies.Jwt);
 
- // const { message } = getMessages(OrderId, cookies.Jwt)
 
 
   const ShowImge = ({ m_type, Messages }) => {
@@ -75,52 +69,13 @@ export default function Msg({ ReqId, OrderId }) {
       updateForm[i] = { input: item.id, value: imgot.img_id, name: item.Title_upload }
     });
 
-    setFormFiles(updateForm)
+    //setFormFiles(updateForm)
    // setmessage(message)
 
 
     orid == undefined ? null : setRequestDes(orid.Request_des)
 
   }, [data, orid, orimg,files])
-
-
-  const uploadFile = async (event) => {
-
-    const photoFormData = new FormData();
-
-    photoFormData.append("file", event.target.files[0]);
-
-    await fetcher({
-      url: '/api/FileUpload', method: "POST_FILE", data: {
-        body: photoFormData,
-        Jwt: cookies.Jwt
-        // ,config:config
-      }
-
-    }).then(ret => {
-
-      fetcher({
-        url: '/api/Messages', method: 'POST', data: {
-          req_id: OrderId,
-          User_id: orid.User_id,
-          isDone: 0,
-          m_type: 1,
-          Jwt: cookies.Jwt,
-          Messages: ret.file.id,
-          Sender_id: cookies.UserData.id
-        }
-      })
-        .then(mesg => {
-          const laamesge = [...allmessage]
-          laamesge.push(mesg)
-          setmessage(laamesge)
-
-
-        })
-
-    });
-
-  }
 
   const uploadFileMessage = async (event) => {
 
@@ -144,9 +99,9 @@ export default function Msg({ ReqId, OrderId }) {
 
   }
 
-  const PostRequest = (OrderId, event, setloadin) => {
+  const PostRequest = (OrderId, event, setIsLoding) => {
 
-    setloadin(true)
+    setIsLoding(true)
     if (event.target.hasAttribute('data-bs-dismiss')) return
 
 
@@ -166,9 +121,9 @@ export default function Msg({ ReqId, OrderId }) {
 
       event.target.click()
       //   }, 5000);
-      setloadin(false);
+      setIsLoding(false);
 
-      setISdONE([true, 'تم  اكمال الطلب ']);
+      setAlertMesssage([true, 'تم  اكمال الطلب ']);
 
       document.documentElement.scrollTop = 0
       setTimeout(() => {
@@ -182,9 +137,9 @@ export default function Msg({ ReqId, OrderId }) {
 
 
       event.target.click()
-      setloadin(false);
+      setIsLoding(false);
 
-      setISdONE([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
+      setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0
     })
 
@@ -204,22 +159,22 @@ export default function Msg({ ReqId, OrderId }) {
 
       FileDownload(response.data, name);
 
-      setISdONE([true, 'جاري تحميل الملف'])
+      setAlertMesssage([true, 'جاري تحميل الملف'])
       document.documentElement.scrollTop = 0;
 
     }).catch(err => {
       console.log(err)
-      setISdONE([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
+      setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0;
     });
 
 
   }
 
-  const DeleteRequest = (OrderId, event, setloadin) => {
+  const DeleteRequest = (OrderId, event, setIsLoding) => {
 
 
-    setloadin(true)
+    setIsLoding(true)
     if (event.target.hasAttribute('data-bs-dismiss')) return
 
 
@@ -236,9 +191,9 @@ export default function Msg({ ReqId, OrderId }) {
 
       event.target.click()
       //   }, 5000);
-      setloadin(false);
+      setIsLoding(false);
 
-      setISdONE([true, 'تم  اكمال الطلب ']);
+      setAlertMesssage([true, 'تم  اكمال الطلب ']);
 
       document.documentElement.scrollTop = 0
 
@@ -254,9 +209,9 @@ export default function Msg({ ReqId, OrderId }) {
 
 
       event.target.click()
-      setloadin(false);
+      setIsLoding(false);
 
-      setISdONE([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
+      setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0
     })
 
@@ -267,18 +222,28 @@ export default function Msg({ ReqId, OrderId }) {
 
 
   }
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
 
   return (
-    <div className=" d-md-flex flex-md-equal my-md-3 ps-md-3">
+    <div 
+    data-test='cy-prosses-order'
+    className=" d-md-flex flex-md-equal my-md-3 ps-md-3">
       <div
         className="bg-light me-md-3 pt-3 px-3  w-100  pt-md-5 px-md-5 text-start text-dark overflow-hidden"
       >
-        {isDone[0] == null ? '' :
-          <div className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
-            {isDone[1]}
+        {AlertMesssage[0] == null ? '' :
+          <div className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
+            {AlertMesssage[1]}
 
             <button type="button" className="btn-close"
-              onClick={() => setISdONE([null, ''])}
+              onClick={() => setAlertMesssage([null, ''])}
               aria-label="قريب"></button>
           </div>}
         <div className="my-3 p-3">
@@ -312,7 +277,7 @@ export default function Msg({ ReqId, OrderId }) {
                 data-bs-toggle="modal"
                 data-bs-target="#completeTask"
 
-                className="m-2 w-30 btn btn-primary" type="submit">
+                className="m-2 w-30 btn  btn-outline-success" type="submit">
                 تسليم الطلب
               </button>
 
@@ -332,7 +297,6 @@ export default function Msg({ ReqId, OrderId }) {
         className="bg-light  w-100 me-md-2 pt-2 px-2 pt-md-2 px-md-2 text-start text-dark overflow-hidden"
       >
         <MessageBox 
-        //files={files} 
         OrderId={OrderId}>
         </MessageBox>
           

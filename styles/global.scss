@@ -1,0 +1,12 @@
+/* custom.scss */    
+
+/* import the necessary Bootstrap files */
+@import "bootstrap";
+
+/* ------- customize primary buttons -------- */   
+$mynewcolor:#77cccc;
+
+
+.btn-outline-success {
+    @include button-outline-variant($mynewcolor, #222222, lighten($mynewcolor,5%), $mynewcolor);
+}

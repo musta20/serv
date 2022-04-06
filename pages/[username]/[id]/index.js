@@ -56,7 +56,7 @@ export default function service(postData) {
             }}
 
           >
-            <div data-test='cy-order-page' className='btn btn-primary my-2'>
+            <div data-test='cy-order-page' className='btn btn-outline-success bg-opacity-50 my-2'>
 
               طلب الخدمة
             </div>

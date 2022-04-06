@@ -3,12 +3,26 @@ import fetcher from "../../../model/fetcher";
 import { useCookies } from 'react-cookie';
 import LoadImgeFile from '../../../components/LoadImgeFile';
 import Link from "next/link";
+import { useState } from "react";
+import { useAuth } from "../../../model/hooks//auth";
 
 export default function request() {
-  const [cookies, setCookie, removeCookie] = useCookies(['Jwt']);
+  const [cookies] = useCookies(['Jwt']);
+  const [loadPageData, setloadPageData] = useState(true);
+  useAuth({onlyAdmin: false, setloadPageData: setloadPageData })
 
+  
   const { follows } = getFollows(cookies.Jwt);
-  console.log(follows)
+
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+
   return (
     <div
     data-test='cy-followPage'
@@ -50,7 +64,11 @@ export default function request() {
 
 const getFollows = (Jwt) => {
   const { data, error } = useSWR({ url: '/api/Follow', method: "GET", data: { Jwt: Jwt } }, fetcher);
-  console.log(data)
-  return { follows: data };
+
+  return { 
+    follows: data ,
+    isLoading: !data && !error,
+    error:error
+  };
 
 }

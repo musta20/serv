@@ -6,12 +6,12 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import { useAuth } from "../../../../model/auth";
+import { useAuth } from "../../../../model/hooks//auth";
 import FilesManger from '../../../../components/FilesManger';
 
 
 
-export default function requestpage(props) {
+export default function orderPage(props) {
 
   const [Files, setFile] = useState({});
   const [FormFiles, setFormFiles] = useState([]);
@@ -19,11 +19,12 @@ export default function requestpage(props) {
   const [RequestDes, setRequestDes] = useState('');
   const [cookies] = useCookies(['Jwt']);
   const router = useRouter();
-  const [loadPageData, setloadPageData] = useState(false);
+  const [loadPageData, setloadPageData] = useState(true);
 
-  const [isLoding, setisLoding] = useState(false);
-  const [isDone, setISdONE] = useState([null, ""])
-  useAuth({ ProtectedPage: true, onlyAdmin: false, setloadPageData: setloadPageData })
+  const [isLoding, setIsLoding] = useState(false);
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
+
+  useAuth({ onlyAdmin: false, setloadPageData: setloadPageData })
 
   const { data } = RequirementUploader(router.query.id)
   const { serv } = getServices(router.query.id)
@@ -33,8 +34,8 @@ export default function requestpage(props) {
 
     if (currentFile !== 0 && id !== 0) {
 
-      console.log(currentFile)
-      console.log(id)
+
+      
       setFile({ input: currentFile, value: id })
 
     }
@@ -60,8 +61,7 @@ export default function requestpage(props) {
   const closeMdeol = () => {
 
     const updatFile = FormFiles.findIndex(item => item.input == Files.input)
-    console.log(FormFiles)
-    console.log(updatFile)
+  
     const newupdateForm = [...FormFiles]
 
     newupdateForm[updatFile].value = Files.value
@@ -120,13 +120,13 @@ export default function requestpage(props) {
 
   const PostRequest = (event) => {
 
-    setisLoding(true)
+    setIsLoding(true)
     event.preventDefault();
 
     if (!RequestDes && !serv.is_des_req) {
-      setisLoding(false)
+      setIsLoding(false)
 
-      setISdONE([false, `الرجاء تعبئة وصف الطلب`])
+      setAlertMesssage([false, `الرجاء تعبئة وصف الطلب`])
       document.documentElement.scrollTop = 0
       return
     }
@@ -136,9 +136,9 @@ export default function requestpage(props) {
 
       FormFiles.forEach(item => {
         if (!item.value && item.is_required) {
-          setisLoding(false)
+          setIsLoding(false)
 
-          setISdONE([false, `الرجاء ارفاق ${item.name}`])
+          setAlertMesssage([false, `الرجاء ارفاق ${item.name}`])
           document.documentElement.scrollTop = 0
 
           throw 'upliad err'
@@ -163,8 +163,8 @@ export default function requestpage(props) {
       }
     }).then(e => {
 
-      setisLoding(false)
-      setISdONE([true, `تم إضاف اليانات`])
+      setIsLoding(false)
+      setAlertMesssage([true, `تم إضاف اليانات`])
       document.documentElement.scrollTop = 0
       setTimeout(() => {
         router.push('/profile')
@@ -172,30 +172,40 @@ export default function requestpage(props) {
 
 
     }).catch(err => {
-      setisLoding(false)
-      setISdONE([false, `حدث خطاء الرجاء المحاولة لاخقا`])
+      setIsLoding(false)
+      setAlertMesssage([false, `حدث خطاء الرجاء المحاولة لاخقا`])
       document.documentElement.scrollTop = 0
 
     });
 
   }
 
-  if (!loadPageData) return <div>loadin</div>
+
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+
+
 
   return (<Layout>
     <div className="container bg-light">
       <div className="py-5 text-center">
         <h2>نموذج طلب الخدمة</h2>
 
-        {isDone[0] == null ? '' :
-          <div data-test='cy-alert-order' className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
+        {AlertMesssage[0] == null ? '' :
+          <div data-test='cy-alert-order' className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
             <span >
-              {isDone[1]}
+              {AlertMesssage[1]}
 
             </span>
 
             <button type="button" className="btn-close"
-              onClick={() => setISdONE([null, ''])}
+              onClick={() => setAlertMesssage([null, ''])}
               aria-label="قريب"></button>
           </div>}
       </div>
@@ -253,7 +263,7 @@ export default function requestpage(props) {
 
                       data-bs-toggle="modal" 
                       data-bs-target="#exampleModalCenteredScrollable"
-                      className="mt-2 btn btn-primary">إضافة ملف محفوظ</button>
+                      className="mt-2 btn  btn-outline-success">إضافة ملف محفوظ</button>
                   </div>
                   <div className="">
 
@@ -278,7 +288,7 @@ export default function requestpage(props) {
               disabled={isLoding}
               data-test='cy-post-order'
 
-              className="w-50 btn btn-primary btn-lg" type="submit">
+              className="w-50 btn  btn-outline-success btn-lg" type="submit">
               {isLoding ?
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 :
@@ -316,7 +326,7 @@ export default function requestpage(props) {
              data-test='cy-close-filemanger'
               onClick={() => closeMdeol()}
                data-bs-dismiss="modal"
-                className="btn btn-primary">أضف الملف</button>
+                className="btn  btn-outline-success">أضف الملف</button>
           </div>
         </div>
       </div>
@@ -391,7 +401,6 @@ const InputType = ({ inputid, FormFiles, uploadFile, removeImge, allimges, i }) 
     disabled={false}
     onChange={event => uploadFile(event, inputid)}
     type="file" className=" form-control w-75"
-  //id={`${i}customFile`}
 
   ></input>
 }

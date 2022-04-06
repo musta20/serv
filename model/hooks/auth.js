@@ -2,15 +2,14 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie'
-import fetcher from './fetcher'
+import fetcher from '../fetcher'
 
 
-export const useAuth = ({ onlyAdmin, ProtectedPage, setloadPageData } = {}) => {
+export const useAuth = ({ onlyAdmin, setloadPageData } = {}) => {
 
     const [cookies, setCookie, removeCookie] = useCookies(['Jwt']);
     
     //const [reRoute, setReRout] = useState(false);
-
 
     const router = useRouter()
 
@@ -23,20 +22,24 @@ export const useAuth = ({ onlyAdmin, ProtectedPage, setloadPageData } = {}) => {
 
     //  }
 
-    const reRoute = ({UserData}={}) => {
+    const reRoute = (UserData) => {
 
         if(!UserData) UserData  = cookies.UserData;
-        if(onlyAdmin == null) 
-        {
 
-            if (UserData.user_type !== 2) return router.push('/profile')
+        if(!UserData && router.pathname == '/login') return;
 
-            router.push('/Dashboard')
-            return
+        if(onlyAdmin == null && !(UserData && router.pathname == '/login')) return;
+/////////////trur  break
+///////////////// true and true 
+       // {
+           //if(UserData.user_type !== 2) return router.push('/profile')
+           //router.push('/Dashboard')
+           //return
+        //}
 
-        }
-
-        if (onlyAdmin && UserData.user_type !== 2) {
+        console.log('THIS BITSH ACUSLE WORK')
+        console.log(UserData)
+        if ((onlyAdmin || onlyAdmin==null) && UserData.user_type !== 2) {
 
             router.push('/profile')
             return
@@ -44,6 +47,7 @@ export const useAuth = ({ onlyAdmin, ProtectedPage, setloadPageData } = {}) => {
         }
 
         if (!onlyAdmin && UserData.user_type == 2) {
+            console.log('GO TO DASHBOARD')
 
             router.push('/Dashboard')
             return
@@ -106,7 +110,7 @@ export const useAuth = ({ onlyAdmin, ProtectedPage, setloadPageData } = {}) => {
 
         reRoute();
 
-        setloadPageData(true)
+        setloadPageData(false)
 
 
     }, [])

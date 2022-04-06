@@ -51,3 +51,13 @@ Cypress.Commands.add('getBySel', (selector, ...args) => {
     cy.getBySel('cy-login-submit').click()  })
 
 
+
+    Cypress.Commands.add('logInAdmin', () => {
+      cy.getBySel('cy-login-btn').click()
+      cy.location("pathname").should("eq", "/login");
+      cy.getBySel('cy-login-username').type(userData.provider.username)
+      cy.getBySel('cy-login-password').type(userData.provider.password)
+      cy.getBySel('cy-login-submit').click()  })
+  
+
+

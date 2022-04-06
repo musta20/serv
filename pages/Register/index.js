@@ -14,8 +14,8 @@ export default function profile(postData) {
     const [Name, setName] = useState('');
     const [PassWord, setPassWord] = useState('');
     const [rePassWord, setrePassWord] = useState('');
-    const [isLoding, setisLoding] = useState(false);
-    const [filederr, setfilederr] = useState(
+    const [isLoding, setIsLoding] = useState(false);
+    const [filederr, setFiledsErrors] = useState(
         {
             username: '',
             name: '',
@@ -54,7 +54,7 @@ export default function profile(postData) {
         if (!rePassWord) cc.repassword = "إعادة كلمة المرور مطلوبه"
 
         console.log(cc)
-        setfilederr(cc)
+        setFiledsErrors(cc)
 
 
         if (!UserName || !Name || !PassWord || !rePassWord) return setErros('الرجاء تعبئة الحقول')
@@ -64,7 +64,7 @@ export default function profile(postData) {
             setrePassWord('');
             setErros('اعادة كلمة المرور غير مطابق');
             cc.repassword = 'اعادة كلمة المرور غير مطابق'
-            setfilederr(cc)
+            setFiledsErrors(cc)
             return;
         }
 
@@ -79,7 +79,7 @@ export default function profile(postData) {
             }
         })
             .then(({data}) => {
-                setisLoding(false)
+                setIsLoding(false)
                 setCookie('Jwt', data.Jwt, { path: '/' });
                 setCookie('UserData', data.UserData, { path: '/' });
                 router.push('/profile')
@@ -87,7 +87,7 @@ export default function profile(postData) {
             })
             .catch(err => {
 
-                setisLoding(false)
+                setIsLoding(false)
 
                 const laaresevid = Object.entries(err.response.data).map(item => item[1][0])
                 let thedataretrv = err.response.data
@@ -96,7 +96,7 @@ export default function profile(postData) {
 
                 }
 
-                setfilederr(cc);
+                setFiledsErrors(cc);
 
                 setErros(laaresevid.toString())
             })
@@ -167,14 +167,17 @@ export default function profile(postData) {
                                         <div className="input-group has-validation">
                                             <input
 
-                                                onChange={event => event.target.value.length >= 10 ? '' : setUserName(event.target.value)}
                                                 value={UserName}
                                                 data-test='cy-register-phone'
 
-                                                maxLength="9"
                                                 type="number"
                                                 className={`form-control ${filederr.username ? 'is-invalid' : ''}`}
-                                                id="username" placeholder="5xxxxxxxx" required>
+                                                id="username" 
+                                                onChange={event => event.target.value.length >= 10 ? '' : setUserName(event.target.value)}
+                                                placeholder="5xxxxxxxx" 
+                                                maxLength="9"
+
+                                                required>
                                             </input>
                                             <div className='border p-2'>+966</div>
 
@@ -222,7 +225,7 @@ export default function profile(postData) {
                                         disabled={isLoding}
                                         data-test='cy-register-submit'
 
-                                        className="w-100 btn btn-sm btn-primary" type="submit">
+                                        className="w-100 btn btn-sm  btn-outline-success" type="submit">
                                             
                                         {isLoding ?
                                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

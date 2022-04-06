@@ -10,40 +10,40 @@ import { useRouter } from 'next/router'
 import fetcher from "../../model/fetcher";
 import { useCookies } from 'react-cookie';
 
-const Index = ({ username, name, id, img_id ,des }) => {
+const Index = ({ username, name, id, img_id, des }) => {
 
-const [isFollow , setIsFollow] = useState(null);
+  const [isFollow, setIsFollow] = useState(null);
 
-const [cookies] = useCookies(['Jwt']);
+  const [cookies] = useCookies(['Jwt']);
 
-const { services } = getServices(id);
+  const { services } = getServices(id);
 
-const { isuserFollow } = CheckisFollow(id,cookies.Jwt);
+  const { isuserFollow } = CheckisFollow(id, cookies.Jwt);
 
-const router = useRouter()
+  const router = useRouter()
 
 
-useEffect(()=>{
+  useEffect(() => {
 
-setIsFollow(isuserFollow)
+    setIsFollow(isuserFollow)
 
-},[isuserFollow])
+  }, [isuserFollow])
 
-const FollowUser = (id)=>{
+  const FollowUser = (id) => {
 
-  if(!cookies.Jwt) return router.push('/login'); 
+    if (!cookies.Jwt) return router.push('/login');
 
-  fetcher({url:'/api/Follow',method:"POST",data:{id:id,Jwt:cookies.Jwt}})
+    fetcher({ url: '/api/Follow', method: "POST", data: { id: id, Jwt: cookies.Jwt } })
 
-  .then(res=>{
+      .then(res => {
 
- setIsFollow(res)
+        setIsFollow(res)
 
-  })
-  .catch(res=>{
-    
-  })
-}
+      })
+      .catch(res => {
+
+      })
+  }
 
 
   useEffect(() => {
@@ -57,24 +57,24 @@ const FollowUser = (id)=>{
     <Layout >
 
       <div
-      data-test='cy-admin-page'
-      className="pb-5 mb-4 text-white bg-dark">
-      <div id="iwrapper">
+        data-test='cy-admin-page'
+        className="pb-5 mb-4 text-white bg-dark">
+        <div id="iwrapper">
 
-        <div className="col-md-6 px-0 px-2 icontent">
-        <div className="display-6 fst-italic">{name}</div>
+          <div className="col-md-6 px-0 px-2 icontent">
+            <div className="display-6 fst-italic">{name}</div>
 
-          <p className="lead my-3">
-            {des}
-          </p>
-          <p className="lead my-3">
-            {username}
-          </p>
-          <p><button onClick={()=>FollowUser(id)} className={`btn btn-sm  ${isFollow ? "btn-danger" : "btn-info"}`}>{isFollow ? 'متابع' : 'تابع'}</button></p>
-        </div>
+            <p className="lead my-3">
+              {des}
+            </p>
+            <p className="lead my-3">
+              {username}
+            </p>
+            <p><button onClick={() => FollowUser(id)} className={`btn btn-sm  ${isFollow ? " btn-success" : "btn-info"}`}>{isFollow ? 'متابع' : 'تابع'}</button></p>
+          </div>
 
           <div className="ibackground">
-            
+
             <LoadImgeFile id={img_id}></LoadImgeFile>
           </div>
         </div>
@@ -84,7 +84,7 @@ const FollowUser = (id)=>{
         <div className="container">
 
           <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-          {!services ? '' : services.map(serv =><ServiceCard key={serv.id} Services={serv} ></ServiceCard>  )}
+            {!services ? '' : services.map(serv => <ServiceCard key={serv.id} Services={serv} ></ServiceCard>)}
 
 
           </div>
@@ -120,9 +120,9 @@ function getServices(id) {
 
 }
 
-const CheckisFollow = (id,Jwt) =>{
+const CheckisFollow = (id, Jwt) => {
   console.log(Jwt)
-  const { data, error } = useSWR({ url: '/api/Follow', method: 'SHOW', data: { id:id,Jwt:Jwt } }, fetcher);
+  const { data, error } = useSWR({ url: '/api/Follow', method: 'SHOW', data: { id: id, Jwt: Jwt } }, fetcher);
   return {
     isuserFollow: data,
     isLoding: !data && !error,
@@ -144,7 +144,7 @@ export async function getStaticPaths() {
   })
 
   const paths = path
-  console.log(path)
+
   return {
     paths,
     fallback: true // false or 'blocking'

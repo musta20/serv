@@ -2,28 +2,30 @@ import axios from 'axios';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import fetcher from "../../model/fetcher";
-import { useAuth } from '../../model/auth';
+import { useAuth } from '../../model/hooks//auth';
 import { useCookies } from 'react-cookie';
+import { useRouter } from 'next/router';
 
 
 
 export default function Login(params) {
-  const [loadPageData, setloadPageData] = useState(false);
+  const [loadPageData, setloadPageData] = useState(true);
   const [cookies] = useCookies(['Jwt']);
+  const router = useRouter()
 
-  const { setSession  , reRoute } = useAuth({ ProtectedPage: false, onlyAdmin: null, setloadPageData: setloadPageData })
+  const { setSession , reRoute } = useAuth({onlyAdmin: null, setloadPageData: setloadPageData })
 
 
-  const [username, setusername] = useState('');
+  const [username, setUserName] = useState('');
 
   const [password, setPassword] = useState('');
 
-  const [isLoding, setisLoding] = useState(false);
+  const [isLoding, setIsLoding] = useState(false);
 
   const [errors, setErros] = useState(null);
 
 
- 
+
 
   const LoginUser = async (event) => {
 
@@ -34,29 +36,28 @@ export default function Login(params) {
 
 
     srcf();
-    setisLoding(true)
+    setIsLoding(true)
     await fetcher(
       {
         url: '/api/Login',
         method: 'POST',
         data: { username, password }
       })
-      .then( async({data}) => {
-        console.log(data)
-        setisLoding(false)
-       await setSession(data)
-       // setCookie('Jwt', data.Jwt, { path: '/' });
-       // setCookie('UserData', data.UserData, { path: '/' });
-      //  if()
-      console.log(cookies.Jwt)
+      .then(async ({ data }) => {
 
-         reRoute(data)
+        setIsLoding(false)
+        await setSession(data)
+        // setCookie('Jwt', data.Jwt, { path: '/' });
+        // setCookie('UserData', data.UserData, { path: '/' });
+        //  if()
+        reRoute(data.UserData)
+    //  router.push('/profile')
       })
       .catch(err => {
-        setisLoding(false)
-          console.log(err)
-       setErros(err.response.data)
-    // setErros(Object.values(err.response.data).flat())
+        setIsLoding(false)
+        console.log(err)
+        setErros(err.response.data)
+        // setErros(Object.values(err.response.data).flat())
 
       })
 
@@ -69,6 +70,16 @@ export default function Login(params) {
     }
 
   }, [])
+
+  if (loadPageData  && cookies.Jwt) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+
 
   return (
     <>
@@ -86,17 +97,17 @@ export default function Login(params) {
 
         <main className="form-signin">
           <form onSubmit={LoginUser}   >
-          <h1 className="h3 mb-3 fw-normal">تسجيل الدخول</h1>
+            <h1 className="h3 mb-3 fw-normal">تسجيل الدخول</h1>
 
             <div className='alert-box'>
               <div data-test='cy-login-alert'
-               className={`alert alert-danger alert-dismissible fade ${!errors ? "" : 'show'} `}
+                className={`alert alert-danger alert-dismissible fade ${!errors ? "" : 'show'} `}
                 role="alert">
-                  <span>
+                <span>
                   {errors}
 
 
-                  </span>
+                </span>
                 <button type="button"
                   className="btn-close"
                   onClick={() => setErros(null)}
@@ -108,7 +119,7 @@ export default function Login(params) {
             <div className="form-floating">
               <input
 
-                onChange={(event) => setusername(event.target.value)}
+                onChange={(event) => setUserName(event.target.value)}
                 data-test="cy-login-username"
                 value={username}
                 name='username'
@@ -143,7 +154,7 @@ export default function Login(params) {
             <button
               disabled={isLoding}
               data-test='cy-login-submit'
-              className="w-100 btn btn-lg btn-primary" type="submit">
+              className="w-100 btn btn-lg btn-outline-success bg-opacity-50" type="submit">
               {isLoding ?
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 :
@@ -162,4 +173,3 @@ export default function Login(params) {
 
 var srcf = async () => await axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie');
 
-var getuserdata = async () => await axios.get('http://127.0.0.1:8000/api/user').then(res => console.log(res.data))

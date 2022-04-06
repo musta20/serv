@@ -5,7 +5,7 @@ import fetcher from "../../../../model/fetcher";
 import { useCookies } from 'react-cookie';
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useAuth } from "../../../../model/auth";
+import { useAuth } from "../../../../model/hooks//auth";
 
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -18,16 +18,18 @@ export default function requestpage(props) {
   const [RequestDes, setRequestDes] = useState('');
   const [cookies] = useCookies(['Jwt']);
   const [loadPageData, setloadPageData] = useState(false);
-  const [isDone, setISdONE] = useState([null, ""])
-  const [isLoding, setisLoding] = useState(false);
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
+  const [isLoding, ] = useState(false);
 
   const router = useRouter()
 
-  useAuth({ ProtectedPage: true, onlyAdmin: false, setloadPageData: setloadPageData })
+  useAuth({onlyAdmin: false, setloadPageData: setloadPageData })
 
-  const { data } = RequirementUploader(router.query.id,cookies.Jwt)
-  const { orid } = OrderData(router.query.order_id,cookies.Jwt)
-  const { orimg } = OrderImgeData(router.query.order_id,cookies.Jwt)
+  const { data } = RequirementUploader({id:router.query.id,Jwt:cookies.Jwt})
+  const { orid } = OrderData({id:router.query.order_id,Jwt:cookies.Jwt})
+  const { orimg } = OrderImgeData({id:router.query.order_id,Jwt:cookies.Jwt})
+  const { files } = getFiles(cookies.Jwt);
+  const { serv } = getServices(router.query.id)
 
   const handelimgeselection = (id) => {
 
@@ -145,20 +147,19 @@ export default function requestpage(props) {
     setFormFiles(newupdateForm)
   }
 
-  const { files } = getFiles(cookies.Jwt);
-  const { serv } = getServices(router.query.id)
+
 
   const PostRequest = (event) => {
 
     event.preventDefault();
 
-    setisLoding(true);
+    setIsLoding(true);
 
     if (!RequestDes && !serv.is_des_req) 
     {
-      setisLoding(false)
+      setIsLoding(false)
 
-      setISdONE([false, `الرجاء ارفاق hgfdhkhj hg'f,f td hg,wt`])
+      setAlertMesssage([false, `الرجاء ارفاق hgfdhkhj hg'f,f td hg,wt`])
       document.documentElement.scrollTop = 0   
       return
     }
@@ -166,9 +167,9 @@ export default function requestpage(props) {
 
       FormFiles.forEach(item => {
         if (!item.value && item.is_required) {
-          setisLoding(false)
+          setIsLoding(false)
 
-          setISdONE([false, `الرجاء ارفاق ${item.name}`])
+          setAlertMesssage([false, `الرجاء ارفاق ${item.name}`])
           document.documentElement.scrollTop = 0
 
           throw 'upliad err'
@@ -195,8 +196,8 @@ export default function requestpage(props) {
       }
     }).then(e => {
 
-      setisLoding(false)
-      setISdONE([true, `تم إضاف اليانات`])
+      setIsLoding(false)
+      setAlertMesssage([true, `تم إضاف اليانات`])
       document.documentElement.scrollTop = 0
       setTimeout(() => {
         router.push('/profile')
@@ -205,13 +206,21 @@ export default function requestpage(props) {
 
 
     }).catch(err => {
-      setisLoding(false)
-      setISdONE([false, `حدث خطاء الرجاء المحاولة لاخقا`])
+      setIsLoding(false)
+      setAlertMesssage([false, `حدث خطاء الرجاء المحاولة لاخقا`])
       document.documentElement.scrollTop = 0
 
     });
 
 
+  }
+
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
   }
 
 
@@ -220,19 +229,19 @@ export default function requestpage(props) {
 
       <div className="py-5 text-center">
 
-        {isDone[0] == null ? '' :
-      <div className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
+        {AlertMesssage[0] == null ? '' :
+      <div className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
        <span
        data-test='cy-order-update-alert'
        >
 
-       {isDone[1]}
+       {AlertMesssage[1]}
 
 
        </span>
 
         <button type="button" className="btn-close"
-         onClick={()=>setISdONE([null,''])}
+         onClick={()=>setAlertMesssage([null,''])}
          aria-label="قريب"></button>
       </div>}      </div>
 
@@ -279,7 +288,7 @@ export default function requestpage(props) {
                     onClick={(e) => handelOpenModel(e)}
 
                     data-bs-toggle="modal" data-bs-target="#exampleModalCenteredScrollable"
-                    className="mt-2 btn btn-primary">إضافة ملف محفوظ</button>
+                    className="mt-2 btn  btn-outline-success">إضافة ملف محفوظ</button>
                 </div>
                 <div className="">
 
@@ -301,8 +310,17 @@ export default function requestpage(props) {
           </hr>
           <div className=" d-flex justify-content-center">
             <button 
+            disabled={isLoding}
             data-test='update-order-data'
-            className="w-50 btn btn-primary btn-lg" type="submit">حفظ التعديلات</button>
+            className="w-50 btn  btn-outline-success btn-lg" type="submit">
+              
+              
+              {isLoding ?
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                :
+                "   حفظ التعديلات  "
+              }
+            </button>
 
           </div>
         </form>
@@ -326,7 +344,9 @@ export default function requestpage(props) {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-            <button type="button" onClick={() => closeMdeol()} data-bs-dismiss="modal" className="btn btn-primary">أضف الملف</button>
+            <button type="button" onClick={() => closeMdeol()} 
+            data-bs-dismiss="modal" 
+            className="btn  btn-outline-success">أضف الملف</button>
           </div>
         </div>
       </div>
@@ -335,10 +355,9 @@ export default function requestpage(props) {
   )
 }
 
-function RequirementUploader(id) {
+const RequirementUploader = (id) =>{
 
   const { data, error } = useSWR({ url: '/api/RequirmenUploader', method: 'SHOW', data: { id } }, fetcher);
-
 
   return {
     data: data,
@@ -347,27 +366,26 @@ function RequirementUploader(id) {
   }
 }
 
-const OrderData = (id, jwt) => {
+const OrderData = (props) => {
   
-  const { data, error } = useSWR({ url: '/api/Request', method: 'SHOW', data: { id:id ,Jwt:jwt } }, fetcher);
-  // const data = await fetcher({ url: '/api/Request', method: 'SHOW', data:{id:id,Jwt:jwt}});
+  const { data, error } = useSWR({ url: '/api/Request', method: 'SHOW', data: props}, fetcher);
+
   return {
     orid: data
   }
 }
 
-const OrderImgeData = (id, jwt) => {
-  const { data, error } = useSWR({ url: '/api/imgetorequest', method: 'SHOW', data: { id:id ,Jwt:jwt } }, fetcher);
-  // const data = await fetcher({ url: '/api/imgetorequest', method: 'SHOW', data:{id:id,Jwt:jwt}});
- console.log('OrderImgeData OrderImgeData OrderImgeData OrderImgeData')
- console.log(data)
+const OrderImgeData = (props) => {
+  const { data, error } = useSWR({ url: '/api/imgetorequest', method: 'SHOW', data: props }, fetcher);
+ 
+  
   return {
     orimg: data
 
   }
 }
 
-function getServices(id) {
+const getServices = (id) =>{
 
   const { data, error } = useSWR({ url: '/api/services', method: 'SHOW', data: { id } }, fetcher);
 
@@ -381,7 +399,7 @@ function getServices(id) {
 
 const getFiles = (jwt) => {
   const { data, error } = useSWR({ url: '/api/FileUpload', method: 'GET', data: { Jwt: jwt } }, fetcher);
-  //console.log(data)
+
   return {
     files: data,
     isLoding: !data && !error,

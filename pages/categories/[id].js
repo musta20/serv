@@ -8,7 +8,7 @@ import ShowUl from "../../components/ShowUl";
 
 
 
-export default function CCat({ MainCat, params, Cats }) {
+export default function Categorie({ MainCat, params, Cats }) {
 
 
     const { services, isLoding, isErorr } = getServices(Cats);

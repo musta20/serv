@@ -4,6 +4,7 @@ import Image from 'next/image'
 import useSWR from "swr"
 import fetcher from "../../../model/fetcher"
 import FilesManger from "../../../components/FilesManger"
+import { useAuth } from "../../../model/hooks/auth"
 
 
 
@@ -18,11 +19,12 @@ export default function infoUser() {
   const [currentImge, setcurrentImge] = useState(0)
   const [selectfile, setselectfile] = useState(0)
   const [allimgFile, setallimgFile] = useState([])
-  const [isDone, setISdONE] = useState([null, ""])
-  const [isLoding, setisLoding] = useState(false)
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
+  const [isLoding, setIsLoding] = useState(false)
+  const [loadPageData, setloadPageData] = useState(true);
 
 
-  const [filederr, setfilederr] = useState(
+  const [filederr, setFiledsErrors] = useState(
     {
       name: '',
       phone: '',
@@ -31,23 +33,23 @@ export default function infoUser() {
       img_id: ''
     })
 
-  const validationUpdate = async (e) => {
+  const updateUserInfo = async (e) => {
 
     e.preventDefault()
 
-    let allerror = { ...filederr }
+    let filedsErrors = { ...filederr }
 
-    for (const i in allerror) {
-      allerror[i] = ""
+    for (const i in filedsErrors) {
+      filedsErrors[i] = ""
     }
 
-    if (!name) allerror.name = "اسم المستخدم مطلوب"
-    if (!phone) allerror.phone = "رقم الجوال مطلوب "
-    if (!des) allerror.des = "التعريف مطلوب  "
+    if (!name) filedsErrors.name = "اسم المستخدم مطلوب"
+    if (!phone) filedsErrors.phone = "رقم الجوال مطلوب "
+    if (!des) filedsErrors.des = "التعريف مطلوب  "
 
     if (password && password !== repassword) cc.password = ' تاكيد كلمة المرور غير مطابق'
 
-    setfilederr(allerror)
+    setFiledsErrors(filedsErrors)
 
     if (!name || !phone || !des || (password && password !== repassword)) return
 
@@ -60,12 +62,12 @@ export default function infoUser() {
         name: name,
         des: des,
         phone: phone,
-        img_id:currentImge,
+        img_id: currentImge,
       }
     })
       .then(res => {
-        setisLoding(false)
-        setISdONE([true, 'تم تحديث البيانات '])
+        setIsLoding(false)
+        setAlertMesssage([true, 'تم تحديث البيانات '])
         document.documentElement.scrollTop = 0
 
       })
@@ -77,18 +79,18 @@ export default function infoUser() {
         if (typeof thedataretrv === 'object' && thedataretrv !== null) {
           for (const property in thedataretrv) {
 
-            allerror[property] = thedataretrv[property].toString();
+            filedsErrors[property] = thedataretrv[property].toString();
 
           }
 
-          setAllError({ ...allerror });
+          setFiledsErrors({ ...filedsErrors });
         }
 
 
 
-        setisLoding(false)
+        setIsLoding(false)
 
-        setISdONE([false, 'حدث خطاء الرجاء المحاولة مرة اخرى'])
+        setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة مرة اخرى'])
 
         document.documentElement.scrollTop = 0;
 
@@ -107,7 +109,7 @@ export default function infoUser() {
 
   }
 
-  const [cookies, setCookie, removeCookie] = useCookies(['Jwt']);
+  const [cookies] = useCookies(['Jwt']);
 
   const handelimgeselection = (id) => {
     //console.log(id)
@@ -137,12 +139,18 @@ export default function infoUser() {
     e.preventDefault();
   }
 
+
+
+
+
+  useAuth({onlyAdmin: true, setloadPageData: setloadPageData })
+
   const { files } = getFiles(cookies.Jwt);
 
-  const { user , isInfoLoding } = getMyInfo(cookies.Jwt);
+  const { user, isInfoLoding } = getMyInfo(cookies.Jwt);
 
   useEffect(() => {
-    console.log(isDone)
+    console.log(AlertMesssage)
     if (user) {
       setname(user.name)
       setphone(user.phone)
@@ -188,8 +196,9 @@ export default function infoUser() {
     e.preventDefault()
     setcurrentImge(0)
   }
-  
-  if (isInfoLoding) {
+
+
+  if (loadPageData || isInfoLoding) {
     return <div className="text-center py-5">
       <div className="spinner-border" role="status">
         <span className="visually-hidden">Loading...</span>
@@ -197,23 +206,30 @@ export default function infoUser() {
     </div>
   }
 
-  return <div className="col-md-7 col-lg-8">
+
+
+  return <div
+    data-test='cy-userPage'
+    className="col-md-7 col-lg-8">
     <h4 className="mb-3">
       البيانات الشخصية
     </h4>
-    
-    {isDone[0] == null ? '' :
-      <div className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'} 
-       alert-dismissible fade show`} role="alert">
 
-        {isDone[1]}
+    {AlertMesssage[0] == null ? '' :
+      <div className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'} 
+       alert-dismissible fade show`} role="alert">
+        <span data-test='cy-alert'>
+          {AlertMesssage[1]}
+
+
+        </span>
 
         <button type="button" className="btn-close"
-         onClick={()=>setISdONE([null,""])} 
-         aria-label="قريب"></button></div>
-         }
+          onClick={() => setAlertMesssage([null, ""])}
+          aria-label="قريب"></button></div>
+    }
 
-    <form onSubmit={(e) => validationUpdate(e)}
+    <form onSubmit={(e) => updateUserInfo(e)}
 
       className="needs-validation" noValidate>
       <div className="row g-3">
@@ -221,6 +237,7 @@ export default function infoUser() {
           <label htmlFor="email" className="form-label ">الاسم<span className="text-muted">(اختياري)</span></label>
           <input
             type="text"
+            data-test='cy-username'
             onChange={(e) => setname(e.target.value)}
             value={name}
             className={`form-control text-start ${filederr.name ? 'is-invalid' : ''}`}
@@ -237,6 +254,8 @@ export default function infoUser() {
             type="textarea"
             onChange={(e) => setdes(e.target.value)}
             value={des}
+            data-test='cy-des'
+
             rows={5}
             className={`form-control ${filederr.des ? 'is-invalid' : ''}`}
 
@@ -254,10 +273,12 @@ export default function infoUser() {
 
           <div className="input-group has-validation">
 
-            <input type="text"
+            <input
 
               onChange={event => event.target.value.length >= 10 ? '' : setphone(event.target.value)}
               value={phone}
+              data-test='cy-phone'
+
 
               maxLength="9"
               type="number"
@@ -317,13 +338,18 @@ export default function infoUser() {
           onClick={(e) => handelOpenModel(e)}
 
           data-bs-toggle="modal" data-bs-target="#exampleModalCenteredScrollable"
-          className="mt-2 btn btn-sm btn-primary">إضافة ملف محفوظ</button>
+          className="mt-2 btn btn-sm  btn-outline-success">إضافة ملف محفوظ</button>
       </div>
 
       <br></br>
       <button
         disabled={isLoding}
-        className="w-75 btn btn-lg   btn-primary" type="submit">
+
+        data-test='cy-user-update'
+
+        className="w-75 btn btn-lg  btn-outline-success"
+
+        type="submit">
         {isLoding ?
           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           :
@@ -346,7 +372,8 @@ export default function infoUser() {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-            <button type="button" onClick={() => closeMdeol()} data-bs-dismiss="modal" className="btn btn-primary">أضف الملف</button>
+            <button type="button"
+              onClick={() => closeMdeol()} data-bs-dismiss="modal" className="btn  btn-outline-success">أضف الملف</button>
           </div>
         </div>
       </div>

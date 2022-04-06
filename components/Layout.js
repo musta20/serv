@@ -4,11 +4,9 @@ import Head from 'next/head'
 import { useCookies } from 'react-cookie';
 
 import Nav from './Nav'
-import useSWR from 'swr';
-import fetcher from '../model/fetcher';
 
 export default function Layout( props ) {
-  const [cookies, setCookie, removeCookie] = useCookies(['Jwt']);
+  const [cookies] = useCookies(['Jwt']);
   
 
 
@@ -20,7 +18,7 @@ export default function Layout( props ) {
     <meta name="description" content=""></meta>
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors"></meta>
     <meta name="generator" content="Hugo 0.84.0"></meta>
-    <title>مثال الألبوم · Bootstrap v5.0</title>
+    <title>خدماتي - لإنجاز جميغ الخدمات الالكترونية</title>
 
 
       </Head>
@@ -36,12 +34,3 @@ export default function Layout( props ) {
   )
 }
 
-function getUserData(Jwt) {
-  const {  data  , error } = useSWR({url:'/api/user',method:'GET',data:{Jwt}},fetcher);
-  return {
-      services:  data ,
-      isLoding: !data && !error ,
-      isErorr :  error
-  }
-
-}

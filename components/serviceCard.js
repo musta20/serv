@@ -22,7 +22,7 @@ export default function ServiceCard({ Services }) {
         <div className="d-flex justify-content-between align-items-center">
           <div className="btn-group">
             <Link  href={`/${Services.user.username}/${Services.id}`}    >
-              <div id="cy-openserv"  className="btn btn-sm btn-outline-secondary " >
+              <div id="cy-openserv"  className="btn btn-sm btn-outline-success bg-opacity-50 " >
 
                 عرض الخدمة
               </div>

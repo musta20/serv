@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
+import { useAuth } from "../../../model/hooks/auth"
+
 import fetcher from "../../../model/fetcher";
 
 import axios from "axios";
 
 import Image from 'next/image'
 import FilesManger from "../../../components/FilesManger";
-import { useRouter } from "next/router";
+
 
 export default function Serv({ upid }) {
   const [cookies] = useCookies(['Jwt']);
@@ -16,12 +18,15 @@ export default function Serv({ upid }) {
   const [currentImge, setcurrentImge] = useState(0)
   const [selectfile, setselectfile] = useState(0)
   const [allimgFile, setallimgFile] = useState([])
-  const [isLoding, setisLoding] = useState(false);
-  const router = useRouter();
+  const [isLoding, setIsLoding] = useState(false);
 
 
 
 
+  const [loadPageData, setloadPageData] = useState(true);
+
+
+  useAuth({onlyAdmin: true, setloadPageData: setloadPageData })
 
   const LoadServ = (id) => {
     const { data, error } = useSWR({ url: "/api/services", method: 'SHOW', data: { id } }, fetcher);
@@ -32,24 +37,16 @@ export default function Serv({ upid }) {
   }
   
   const { files } = getFiles(cookies.Jwt);
-
   const { servdata } = LoadServ(upid);
-
   const [Title, setTitle] = useState('');
-
   const [Description, setDescription] = useState('');
-
   const [Requirement, setRequirement] = useState('');
-
   const [storedcat, setselectedCat] = useState(0)
-
-  const [isDone, setISdONE] = useState([null, ""])
-
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
   const [LastMainCat, setMainCat] = useState([])
-
   const [ended, setended] = useState(false)
 
-  const [AllError, setAllError] = useState({
+  const [filedsErrors, setfiledsErrors] = useState({
     Title: '',
     Description: "",
     Requirement: "",
@@ -127,22 +124,22 @@ export default function Serv({ upid }) {
   const SaveServ = (e) => {
 
     e.preventDefault();
-    setisLoding(true)
+    setIsLoding(true)
 
-    let allerror = { ...AllError };
+    let filedsErrors = { ...filedsErrors };
 
-    for (const cc in allerror) {
-      allerror[cc] = ""
+    for (const cc in filedsErrors) {
+      filedsErrors[cc] = ""
     }
 
-    if (!Title) allerror.Title = "  العنوان مطلوب  "
-    if (!Description) allerror.Description = "  الوصف مطلوب  "
-    if (!Requirement) allerror.Requirement = "  متطلبات الخدمة مطلوب  "
-    if (!storedcat) allerror.selectedCat = "  يجب عايك تختيار تصنيف  "
+    if (!Title) filedsErrors.Title = "  العنوان مطلوب  "
+    if (!Description) filedsErrors.Description = "  الوصف مطلوب  "
+    if (!Requirement) filedsErrors.Requirement = "  متطلبات الخدمة مطلوب  "
+    if (!storedcat) filedsErrors.selectedCat = "  يجب عايك تختيار تصنيف  "
 
-    setAllError(allerror);
+    setfiledsErrors(filedsErrors);
 
-    if (!Title || !Description || !Requirement || !storedcat) return setisLoding(false)
+    if (!Title || !Description || !Requirement || !storedcat) return setIsLoding(false)
 
 
     fetcher({
@@ -159,8 +156,8 @@ export default function Serv({ upid }) {
       }
     }).then(data => {
 
-      setisLoding(false)
-      setISdONE([true, 'تم تخديث البيانات بسهولة'])
+      setIsLoding(false)
+      setAlertMesssage([true, 'تم تخديث البيانات بسهولة'])
       document.documentElement.scrollTop = 0;
 
 
@@ -172,18 +169,18 @@ export default function Serv({ upid }) {
       if (typeof thedataretrv === 'object' && thedataretrv !== null) {
         for (const property in thedataretrv) {
 
-          allerror[property] = thedataretrv[property].toString();
+          filedsErrors[property] = thedataretrv[property].toString();
 
         }
 
-        setAllError({ ...allerror });
+        setfiledsErrors({ ...filedsErrors });
       }
 
 
 
-      setisLoding(false)
+      setIsLoding(false)
 
-      setISdONE([false, 'حدث خطاء الرجاء المحاولة مرة اخرى'])
+      setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة مرة اخرى'])
 
       document.documentElement.scrollTop = 0;
 
@@ -288,16 +285,25 @@ export default function Serv({ upid }) {
     setcurrentImge(0)
   }
 
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+
   return <><div className="col-md-7 col-lg-8">
     <h4 className="mb-3">
       البيانات الشخصية
     </h4>
-    {isDone[0] == null ? '' :
-      <div className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
-        {isDone[1]}
+    {AlertMesssage[0] == null ? '' :
+      <div className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
+        {AlertMesssage[1]}
 
         <button type="button" className="btn-close"
-          onClick={() => setISdONE([null, ''])}
+          onClick={() => setAlertMesssage([null, ''])}
           aria-label="قريب"></button>
       </div>}
 
@@ -313,13 +319,13 @@ export default function Serv({ upid }) {
             onChange={(e) => setTitle(e.target.value)}
             value={Title}
 
-            className={` text-start form-control ${AllError.Title ? 'is-invalid' : ''}`}
+            className={` text-start form-control ${filedsErrors.Title ? 'is-invalid' : ''}`}
 
             id="email"
             placeholder="اسم الخدمة">
           </input>
           <div className="invalid-feedback">
-            {AllError.Title}
+            {filedsErrors.Title}
           </div>
         </div>
 
@@ -330,14 +336,14 @@ export default function Serv({ upid }) {
             value={Description}
 
 
-            className={`text-start form-control ${AllError.Description ? 'is-invalid' : ''}`}
+            className={`text-start form-control ${filedsErrors.Description ? 'is-invalid' : ''}`}
 
             id="address"
             placeholder="تفاصيل الخدمة"
             required>
           </textarea>
           <div className="invalid-feedback">
-            {AllError.Description}
+            {filedsErrors.Description}
           </div>
         </div>
 
@@ -346,11 +352,11 @@ export default function Serv({ upid }) {
           <textarea rows="5"
             onChange={(e) => setRequirement(e.target.value)}
             value={Requirement}
-            className={`form-control text-start ${AllError.Requirement ? 'is-invalid' : ''}`}
+            className={`form-control text-start ${filedsErrors.Requirement ? 'is-invalid' : ''}`}
             id="address" placeholder="متطلبات الخدمة" required>
           </textarea>
           <div className="invalid-feedback">
-            {AllError.Requirement}
+            {filedsErrors.Requirement}
           </div>
         </div>
         <div className="col-12 ">
@@ -389,13 +395,13 @@ export default function Serv({ upid }) {
           <label className="form-label mt-2">اختر تصنيف الخدمة : </label>
           <aside id="cat"
             onChange={(event) => selectcatforserv(event)}
-            className={`bd-aside  overflow-auto CatBox sticky-xl-top text-muted align-self-start mb-3 mb-xl-5 px-2 ${AllError.storedcat ? 'is-invalid' : ''}`}
+            className={`bd-aside  overflow-auto CatBox sticky-xl-top text-muted align-self-start mb-3 mb-xl-5 px-2 ${filedsErrors.storedcat ? 'is-invalid' : ''}`}
           >
             <ShowUl ul={LastMainCat} storedcat={storedcat} setselectedCat={setselectedCat} ></ShowUl>
 
           </aside>
           <div className="invalid-feedback">
-            {AllError.storedcat}
+            {filedsErrors.storedcat}
           </div>
         </div>
         <div className="col-12">
@@ -411,7 +417,7 @@ export default function Serv({ upid }) {
             onClick={(e) => handelOpenModel(e)}
 
             data-bs-toggle="modal" data-bs-target="#exampleModalCenteredScrollable"
-            className="mt-2 btn btn-primary">إضافة ملف محفوظ</button>
+            className="mt-2 btn  btn-outline-success">إضافة ملف محفوظ</button>
         </div>
 
       </div>
@@ -420,7 +426,7 @@ export default function Serv({ upid }) {
       <button
         disabled={isLoding}
 
-        className="w-100 btn btn-primary btn-lg" type="submit">
+        className="w-100 btn  btn-outline-success btn-lg" type="submit">
         {isLoding ?
           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           :
@@ -446,13 +452,12 @@ export default function Serv({ upid }) {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-            <button type="button" onClick={() => closeMdeol()} data-bs-dismiss="modal" className="btn btn-primary">أضف الملف</button>
+            <button type="button" onClick={() => closeMdeol()} data-bs-dismiss="modal" className="btn  btn-outline-success">أضف الملف</button>
           </div>
         </div>
       </div>
     </div>
   </>
-
 }
 
 const getFiles = (jwt) => {
@@ -465,7 +470,6 @@ const getFiles = (jwt) => {
   }
 
 }
-
 
 const InputType = ({ img_id, uploadFile, removeImge, allimges }) => {
   console.log(allimges)
@@ -496,7 +500,6 @@ const InputType = ({ img_id, uploadFile, removeImge, allimges }) => {
     onChange={event => uploadFile(event)}
     type="file" className=" form-control w-75" id={`customFile`}></input>
 }
-
 
 const LoadCat = () => {
 

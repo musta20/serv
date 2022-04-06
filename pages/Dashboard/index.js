@@ -1,24 +1,22 @@
 
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import InfoUser from './pages/userInfo';
 import Order from './pages/order';
 import Addiserv from './pages/Addiserv';
 import UpdateAddiserv from './pages/updateAddiserv ';
 
 import FilesManger from '../../components/FilesManger';
-import Serv from './pages/serv';
-import { useAuth } from '../../model/auth';
+import Services from './pages/services';
+import { useAuth } from '../../model/hooks//auth';
 import Link from 'next/link';
 import Msg from './pages/MsgOrder';
 import { DashboardContext } from './pages/context'
 
 
 export default function profile(postData) {
-  const [loadPageData, setloadPageData] = useState(false);
-  const [cookies] = useCookies(['Jwt']);
-  const [thispage, setthispage] = useState('order');
-  const [upid, setupid] = useState(0);
+  const [loadPageData, setloadPageData] = useState(true);
+  const [mainPage, setMainPage] = useState('order');
+  const [serviceId, setserviceId] = useState(0);
 
   const [mOrderId, setmOrderId] = useState(0);
   const [mReqId, setReqId] = useState(0);
@@ -27,9 +25,10 @@ export default function profile(postData) {
   const openMsgPage = (ReqId, OrderId) => {
     setReqId(ReqId)
     setmOrderId(OrderId);
-    setthispage('Msg')
+    setMainPage('Msg')
   }
-  useAuth({ ProtectedPage: true, onlyAdmin: true, setloadPageData: setloadPageData })
+
+  useAuth({ onlyAdmin: true, setloadPageData: setloadPageData })
 
 
   useEffect(() => {
@@ -39,25 +38,25 @@ export default function profile(postData) {
       require('bootstrap/dist/js/bootstrap')
 
     }
-  }, [thispage])
+  }, [mainPage])
 
-  const upServ = (i) => {
-    setupid(i)
-    setthispage('upServ')
+  const updateService = (i) => {
+    setserviceId(i)
+    setMainPage('updateService')
   }
 
   const Currentpage = () => {
-    useEffect(() => { }, [thispage])
+    useEffect(() => { }, [mainPage])
 
-    switch (thispage) {
+    switch (mainPage) {
       case 'Info':
 
         return <InfoUser  ></InfoUser>
 
-      case 'upServ':
+      case 'updateService':
 
-        return <DashboardContext.Provider value={{ setthispage }} >
-          <UpdateAddiserv upid={upid}></UpdateAddiserv>
+        return <DashboardContext.Provider value={{ setMainPage }} >
+          <UpdateAddiserv serviceId={serviceId}></UpdateAddiserv>
 
         </DashboardContext.Provider>
       case 'order':
@@ -70,13 +69,13 @@ export default function profile(postData) {
       case 'Serv':
 
         return <div>
-          <span onClick={() => setthispage('Addiserv')}
+          <span onClick={() => setMainPage('Addiserv')}
 
             className='btn btn-sm btn-outline-secondary'>إضافة خدمة</span>
 
           <hr></hr>
 
-          <Serv upServ={upServ} ></Serv>  </div>
+          <Services updateService={updateService} ></Services>  </div>
 
       case 'Addiserv':
 
@@ -84,12 +83,12 @@ export default function profile(postData) {
 
       case 'Msg':
 
-        return <DashboardContext.Provider value={{ setthispage }} >
+        return <DashboardContext.Provider value={{ setMainPage }} >
           <Msg OrderId={mOrderId} ReqId={mReqId}></Msg>
 
         </DashboardContext.Provider>
 
-      case 'request':
+      case 'FilesManger':
 
         return <FilesManger selection={true} ></FilesManger>
 
@@ -104,14 +103,22 @@ export default function profile(postData) {
   }
 
 
-  if (!loadPageData) return <div>loadin</div>
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
 
   return (
     <div data-test='cy-Dashboard'>
 
-      <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <div className="navbar-brand col-md-3 col-lg-2 me-0 px-3 btn" >
-         لوحة التحكم
+      <header className="navbar navbar-dark  sticky-top bg-success bg-opacity-50 flex-md-nowrap p-0 shadow">
+        <div role="button"
+          className="navbar-brand col-md-3 col-lg-2 me-0 px-3 " >
+          لوحة التحكم
         </div>
         <button className="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="عرض/إخفاء لوحة التنقل">
           <span className="navbar-toggler-icon"></span>
@@ -120,7 +127,11 @@ export default function profile(postData) {
         <div className="navbar-nav">
           <div className="nav-item text-nowrap">
             <Link href="/">
-              <div className="nav-link px-3 btn">الشاشة الرئيسية</div>
+
+              <div
+                role="button"
+
+                className="nav-link px-3 ">الشاشة الرئيسية</div>
 
             </Link>
           </div>
@@ -129,7 +140,8 @@ export default function profile(postData) {
         <div className="navbar-nav">
           <div className="nav-item text-nowrap">
             <Link href="/Logout">
-              <div className="nav-link px-3 btn" >تسجيل الخروج</div>
+              <div role="button"
+                className="nav-link px-3 " >تسجيل الخروج</div>
             </Link>
           </div>
 
@@ -143,7 +155,8 @@ export default function profile(postData) {
               <ul className="nav flex-column hoverEffect">
                 <li className="nav-item">
                   <a className="nav-link"
-                    onClick={() => setthispage('Info')}
+                    data-test='cy-info'
+                    onClick={() => setMainPage('Info')}
 
                     href="#">
                     <span data-feather="users"></span>
@@ -159,7 +172,8 @@ export default function profile(postData) {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link"
-                    onClick={() => setthispage('order')}
+                    data-test='cy-order'
+                    onClick={() => setMainPage('order')}
                     href="#">
                     <span data-feather="file"></span>
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -174,9 +188,10 @@ export default function profile(postData) {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link"
-                    onClick={() => setthispage('request')}
-                    href="#">
+                    onClick={() => setMainPage('FilesManger')}
+                    data-test='cy-files'
 
+                    href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-layers" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
 
                     الملفات
@@ -184,7 +199,7 @@ export default function profile(postData) {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link"
-                    onClick={() => setthispage('Serv')}
+                    onClick={() => setMainPage('Serv')}
                     href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                       viewBox="0 0 24 24" fill="none" stroke="currentColor"

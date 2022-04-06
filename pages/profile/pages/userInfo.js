@@ -10,10 +10,10 @@ export default function infoUser() {
   const [password, setpassword] = useState('')
   const [repassword, setrepassword] = useState('')
   const [cookies] = useCookies(['Jwt']);
-  const [isLoding, setisLoding] = useState(false)
-  const [isDone, setISdONE] = useState([null, ""])
+  const [isLoding, setIsLoding] = useState(false)
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
 
-  const [filederr, setfilederr] = useState(
+  const [filederr, setFiledsErrors] = useState(
     {
       name: '',
       username: '',
@@ -28,7 +28,7 @@ export default function infoUser() {
 
   const updateUserInfo = (e) => {
     e.preventDefault()
-    setisLoding(true)
+    setIsLoding(true)
 
     let cc = { ...filederr }
 
@@ -41,7 +41,7 @@ export default function infoUser() {
 
     if (password && password !== repassword) cc.password = ' تاكيد كلمة المرور غير مطابق'
 
-    setfilederr(cc)
+    setFiledsErrors(cc)
 
     if (!name || !username || (password && password !== repassword)) return
 
@@ -57,9 +57,9 @@ export default function infoUser() {
     })
       .then(res => {
 
-        setisLoding(false)
+        setIsLoding(false)
 
-        setISdONE([true, 'تم تحديث البيانات'])
+        setAlertMesssage([true, 'تم تحديث البيانات'])
         document.documentElement.scrollTop = 0
 
       })
@@ -70,9 +70,9 @@ export default function infoUser() {
           cc[property] = thedataretrv[property].toString();
         }
 
-        setfilederr({ ...cc });
+        setFiledsErrors({ ...cc });
 
-        setisLoding(false)
+        setIsLoding(false)
 
       })
 
@@ -87,7 +87,7 @@ useEffect(()=>{
     setusername(user.username);
     setname(user.name)
   }
-},[user,isDone])
+},[user,AlertMesssage])
 
   if (isInfoLoding) {
     return <div className="text-center py-5">
@@ -103,15 +103,15 @@ useEffect(()=>{
     <h4 className="mb-3">
       البيانات الشخصية
     </h4>
-    {isDone[0] == null ? '' :
+    {AlertMesssage[0] == null ? '' :
       <div 
       
-      className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
+      className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
        <span data-test='cy-alert'>
-                 {isDone[1]}
+                 {AlertMesssage[1]}
        </span>
 
-        <button type="button" className="btn-close" onClick={()=>setISdONE([null, ""])} aria-label="قريب"></button>
+        <button type="button" className="btn-close" onClick={()=>setAlertMesssage([null, ""])} aria-label="قريب"></button>
       </div>}
 
     <form onSubmit={updateUserInfo}
@@ -176,7 +176,7 @@ useEffect(()=>{
       </div>
       <br></br>
 
-      <button className="w-100 btn btn-primary btn-lg"
+      <button className="w-100 btn  btn-lg btn-outline-success "
         disabled={isLoding}
         data-test='cy-user-update'
         type="submit">

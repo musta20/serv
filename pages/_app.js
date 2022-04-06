@@ -1,6 +1,9 @@
+
+
+
 import 'bootstrap/dist/css/bootstrap.rtl.min.css'; // Add this line
-import '../styles/globals.css'
 import '../styles/dashboard.rtl.css'
+import '../styles/globals.css'
 import '../styles/signin.css'
 import App from 'next/app';
 

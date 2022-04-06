@@ -5,16 +5,24 @@ import fetcher from '../../../model/fetcher';
 
 import ServiceCard from "../../../components/serviceCard";
 import Model from '../../../components/Model';
+import { useAuth } from "../../../model/hooks/auth"
 
 
 
-export default function serv({ upServ }) {
+export default function serv({ updateService }) {
 
 
   const [cookies] = useCookies(['Jwt']);
   const [selectDlete, setselectDlete] = useState(0);
   const { services, isLoding } = getServices(cookies.Jwt);
   const [allservices, setallservices] = useState([]);
+
+
+
+  const [loadPageData, setloadPageData] = useState(true);
+
+
+  useAuth({onlyAdmin: true, setloadPageData: setloadPageData })
 
   useEffect(() => {
     setallservices(services);
@@ -62,7 +70,9 @@ export default function serv({ upServ }) {
 
   }
 
-  if (isLoding) {
+
+
+  if (loadPageData || isLoding) {
     return <div className="text-center py-5">
       <div className="spinner-border" role="status">
         <span className="visually-hidden">Loading...</span>
@@ -79,7 +89,7 @@ export default function serv({ upServ }) {
             <div className="btn-group w-100 bg-light">
 
               <button
-                onClick={() => upServ(serv.id)}
+                onClick={() => updateService(serv.id)}
                 type="button" className="btn  btn-sm btn-outline-secondary">تعديل</button>
 
               <a onClick={() => setselectDlete(serv.id)}

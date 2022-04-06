@@ -23,7 +23,7 @@ const Model = ({ id, DeleteServ , msg ,ModelId }) => {
              // data-bs-dismiss="modal"
               
               type="button"
-              className="btn btn-primary">
+              className="btn  btn-outline-success">
                 {isLoading ?
                   <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                   : "  إنهاء الطلب"   }

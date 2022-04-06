@@ -15,7 +15,7 @@ export default function FilesManger({ selection, returnSelected }) {
 
   const [select, setSelected] = useState(0);
 
-  const [isDone, setISdONE] = useState([null, ""])
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
 
   const [allimges, setallimgesFile] = useState([])
 
@@ -60,14 +60,14 @@ export default function FilesManger({ selection, returnSelected }) {
         let newarry = arry.filter(i => i.id !== id)
 
         setallimgesFile(newarry)
-        setISdONE([true, e])
+        setAlertMesssage([true, e])
         document.documentElement.scrollTop = 0;
 
 
       })
       .catch(e => {
         console.log(e)
-        setISdONE([false, e.response.data])
+        setAlertMesssage([false, e.response.data])
         document.documentElement.scrollTop = 0;
       })
 
@@ -87,12 +87,12 @@ export default function FilesManger({ selection, returnSelected }) {
 
       FileDownload(response.data, name);
 
-      setISdONE([true, 'جاري تحميل الملف'])
+      setAlertMesssage([true, 'جاري تحميل الملف'])
       document.documentElement.scrollTop = 0;
 
     }).catch(err => {
       console.log(err)
-      setISdONE([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
+      setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0;
     });
 
@@ -114,18 +114,18 @@ export default function FilesManger({ selection, returnSelected }) {
       }
 
     }).then(ret => {
-      setISdONE([true, 'نم تحميل الملف'])
+      setAlertMesssage([true, 'نم تحميل الملف'])
       document.documentElement.scrollTop = 0;
 
 
     }).catch(err => {
       console.log(err.response)
       try {
-        setISdONE([false, Object.values(err.response.data.errors).flat()])
+        setAlertMesssage([false, Object.values(err.response.data.errors).flat()])
 
       }
       catch (e) {
-        setISdONE([false, "حدث خطاء الرجاء المحاولة لاحقا"])
+        setAlertMesssage([false, "حدث خطاء الرجاء المحاولة لاحقا"])
 
       }
 
@@ -152,19 +152,19 @@ export default function FilesManger({ selection, returnSelected }) {
 
       <div>
 
-        {isDone[0] == null ? '' :
-          <div className={`alert ${isDone[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
+        {AlertMesssage[0] == null ? '' :
+          <div className={`alert ${AlertMesssage[0] ? 'alert-success' : 'alert-danger'}  alert-dismissible fade show`} role="alert">
            <span
            data-test='cy-file-manger-alert'
            >
 
-           {isDone[1]}
+           {AlertMesssage[1]}
 
 
            </span>
 
             <button type="button" className="btn-close"
-              onClick={() => setISdONE([null, ""])}
+              onClick={() => setAlertMesssage([null, ""])}
 
               aria-label="قريب"></button>
           </div>}
@@ -185,7 +185,7 @@ export default function FilesManger({ selection, returnSelected }) {
 
     <div>
 
-      <div data-test='cy-open-fileselector' className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      <div data-test='cy-open-fileselector' className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
         {!allimges ? '' : allimges.map(serv =>
           <div key={serv.id} className={displayClass(serv.id)}>
             <Image

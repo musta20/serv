@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
-import useSWR from "swr"
 import Layout from "../../components/Layout"
 import CatsModle from "../../model/catModle ";
-import fetcher from "../../model/fetcher"
 import ShowUl from "../../components/ShowUl";
 
 
 
-export default function CCat({cat}) {
+export default function Categorie({cat}) {
 
     const [LastMainCat, setMainCat] = useState([])
-
-    const [ended, setended] = useState(false)
 
     const catTreeBulider = (KidsMainCat, MainCat, Adress) => {
 
@@ -29,7 +25,7 @@ export default function CCat({cat}) {
             
             if (MainCat.length == i + 1) {
                 setMainCat(MainCat)
-                setended(true)
+              //  setended(true)
 
             }
 

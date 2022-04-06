@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/router';
 import { DashboardContext } from "./context";
+import { useAuth } from "../../../model/hooks/auth"
 
 
 export default function order() {
@@ -13,6 +14,9 @@ export default function order() {
   const [PendingOrder, setPendingOrder] = useState([]);
   const [cookies] = useCookies(['Jwt']);
   const router = useRouter();
+  const [loadPageData, setloadPageData] = useState(true);
+
+  useAuth({ onlyAdmin: true, setloadPageData: setloadPageData })
 
   const { data } = getRequest(cookies.Jwt);
 
@@ -37,6 +41,14 @@ export default function order() {
     });
   }
 
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
 
   return (<>
     <div className="bd-example">
@@ -49,28 +61,29 @@ export default function order() {
         </div>
       </nav>
       <div className="tab-content" id="nav-tabContent">
-        <div className="tab-pane fade active show" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-          {!showOreders(data,0) ? <p>لا يوجد طلبات</p> : showOreders(data,0)
-          .reverse()
-          .map(order =>
-              <RequstCard key={order.id} UpdateOrder={UpdateOrder} 
-              openMsgPage={openMsgPage}
-              setdelteitem={setdelteitem}
+        <div data-test='cy-orders-page'
+          className="tab-pane fade active show" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+          {!showOreders(data, 0) ? <p>لا يوجد طلبات</p> : showOreders(data, 0)
+            .reverse()
+            .map(order =>
+              <RequstCard key={order.id} UpdateOrder={UpdateOrder}
+                openMsgPage={openMsgPage}
+                setdelteitem={setdelteitem}
                 order={order} ></RequstCard>
             )}
         </div>
         <div className="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
           <div className="accordion-body">
-          {!showOreders(data,1) ? <p>لا يوجد طلبات</p> : showOreders(data,1)
-                    .reverse()
+            {!showOreders(data, 1) ? <p>لا يوجد طلبات</p> : showOreders(data, 1)
+              .reverse()
 
-            .map(order =>
-              <RequstCard key={order.id} order={order} ></RequstCard>
-            )}
+              .map(order =>
+                <RequstCard key={order.id} order={order} ></RequstCard>
+              )}
           </div>
         </div>
         <div className="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-        
+
         </div>
       </div>
     </div>
@@ -93,7 +106,7 @@ const ShowDate = ({ time }) => {
 
 }
 
-const RequstCard = ({ order, setdelteitem ,openMsgPage}) => {
+const RequstCard = ({ order, openMsgPage }) => {
 
   return <div className="card">
     <div className="card-header d-flex justify-content-between">
@@ -113,12 +126,13 @@ const RequstCard = ({ order, setdelteitem ,openMsgPage}) => {
 
     {order.isDone !== 0 ? '' :
       <div className="card-footer text-muted">
-        <button 
-      //  onClick={() => UpdateOrder(order)}
-      onClick={()=>openMsgPage(order.service.id ,order.id)}
+        <button
+          //  onClick={() => UpdateOrder(order)}
+          onClick={() => openMsgPage(order.service.id, order.id)}
+          id='open-order'
 
-         className="btn btn-info btn-sm">معالجة الطلب</button>
-        
+          className="btn btn-info btn-sm">معالجة الطلب</button>
+
       </div>
     }
   </div>
@@ -143,17 +157,17 @@ const Model = ({ id, deleteOrder, order }) => {
 
           <button onClick={() => { deleteOrder(order) }}
             data-bs-dismiss="modal" type="button"
-            className="btn btn-primary">حذف</button>
+            className="btn  btn-outline-success">حذف</button>
         </div>
       </div>
     </div>
   </div>
 }
 
-const showOreders = (data,ordertype) => {
-  if(!data) return false
-  let arr=  data.filter(item => item.isDone === ordertype);
-  if(arr.length == 0 ) return false
+const showOreders = (data, ordertype) => {
+  if (!data) return false
+  let arr = data.filter(item => item.isDone === ordertype);
+  if (arr.length == 0) return false
   return arr
 
 

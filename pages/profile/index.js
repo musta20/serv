@@ -3,32 +3,26 @@ import { useEffect, useState } from 'react';
 import InfoUser from './pages/userInfo';
 import Order from './pages/order';
 import Follow from "./pages/follow";
-import { useAuth } from '../../model/auth';
+import { useAuth } from '../../model/hooks/auth';
 import FilesManger from '../../components/FilesManger';
 
-import Msg from "./pages/msg";
 import MessageBox from '../../components/MessageBox';
 import { ProfileContext } from './pages/context';
 import Link from 'next/link';
 
 
-export default function profile(postData) {
-  const [loadPageData, setloadPageData] = useState(false);
+export default function profile() {
+  const [loadPageData, setloadPageData] = useState(true);
 
-  useAuth({ ProtectedPage: true, onlyAdmin: false, setloadPageData: setloadPageData })
+  useAuth({ onlyAdmin: false, setloadPageData: setloadPageData })
 
-  const [thispage, setthispage] = useState('order');
+  const [mainPage, setMainPage] = useState('order');
 
-  const [mOrderId, setmOrderId] = useState(0);
+  const [orderId, setOrderId] = useState(0);
 
-  const [mReqId, setReqId] = useState(0);
-
-
-
-  const openMsgPage = (ReqId, OrderId) => {
-    setReqId(ReqId);
-    setmOrderId(OrderId);
-    setthispage('MessageBox');
+  const openMsgPage = (OrderId) => {
+    setOrderId(OrderId);
+    setMainPage('MessageBox');
   }
 
   useEffect(() => {
@@ -44,7 +38,7 @@ export default function profile(postData) {
 
   const Currentpage = () => {
 
-    switch (thispage) {
+    switch (mainPage) {
 
       case 'Info':
 
@@ -53,9 +47,9 @@ export default function profile(postData) {
       case 'order':
 
         return <ProfileContext.Provider
-        value={{openMsgPage}}
+          value={{ openMsgPage }}
         >
-        <Order ></Order>
+          <Order ></Order>
 
         </ProfileContext.Provider>
 
@@ -67,12 +61,9 @@ export default function profile(postData) {
 
         return <Follow></Follow>
 
-      case 'Msg':
-
-        return <Msg OrderId={mOrderId} ReqId={mReqId}></Msg>
       case 'MessageBox':
 
-        return <MessageBox OrderId={mOrderId} ></MessageBox>
+        return <MessageBox OrderId={orderId} ></MessageBox>
 
       default:
         break;
@@ -84,11 +75,18 @@ export default function profile(postData) {
 
 
 
-  if (!loadPageData) return <div>loadin</div>
+
+  if (loadPageData) {
+    return <div className="text-center py-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
 
   return (
     <div data-test='cy-profile'>
-      <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+      <header className="navbar navbar-dark sticky-top  bg-success bg-opacity-50 flex-md-nowrap p-0 shadow">
         <a className="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">لوحة التحكم </a>
         <button className="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="عرض/إخفاء لوحة التنقل">
           <span className="navbar-toggler-icon"></span>
@@ -96,16 +94,24 @@ export default function profile(postData) {
 
         <div className="navbar-nav">
           <div className="nav-item text-nowrap">
-    <Link  href="/">
-    <div data-test='cy-gohome' className="nav-link px-3">الشاشة الرئيسية</div>
+            <Link href="/">
+              <div data-test='cy-gohome' role="button"
+                className="nav-link px-3">الشاشة الرئيسية</div>
 
-    </Link>
+            </Link>
           </div>
         </div>
 
         <div className="navbar-nav">
           <div className="nav-item text-nowrap">
-            <a className="nav-link px-3" href="/Logout">تسجيل الخروج</a>
+            <Link
+              href="/Logout"
+            >
+              <span role="button"
+                className="nav-link px-3">تسجيل الخروج</span>
+
+            </Link>
+
           </div>
 
         </div>
@@ -118,8 +124,8 @@ export default function profile(postData) {
               <ul className="nav flex-column hoverEffect">
                 <li className="nav-item">
                   <a className="nav-link"
-                  data-test='cy-info'
-                    onClick={() => setthispage('Info')}
+                    data-test='cy-info'
+                    onClick={() => setMainPage('Info')}
 
                     href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -133,8 +139,8 @@ export default function profile(postData) {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link"
-                  data-test='cy-order'
-                    onClick={() => setthispage('order')}
+                    data-test='cy-order'
+                    onClick={() => setMainPage('order')}
                     href="#">
                     <svg xmlns="http://www.w3.org/2000/svg"
                       width="24" height="24" viewBox="0 0 24 24"
@@ -146,19 +152,19 @@ export default function profile(postData) {
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a 
-                  className="nav-link"
-                  data-test='cy-files'
-                   onClick={() => setthispage('request')} href="#">
+                  <a
+                    className="nav-link"
+                    data-test='cy-files'
+                    onClick={() => setMainPage('request')} href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-layers" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                     الملفات
                   </a>
                 </li>
                 <li className="nav-item">
                   <a
-                   className="nav-link" 
-                   data-test='cy-follow'
-                   onClick={() => setthispage('follow')} href="#">
+                    className="nav-link"
+                    data-test='cy-follow'
+                    onClick={() => setMainPage('follow')} href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                       viewBox="0 0 24 24" fill="none" stroke="currentColor"
                       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"

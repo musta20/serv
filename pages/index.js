@@ -55,17 +55,17 @@ if(!nodata) return "no data"
       <section className="py-5 text-center container">
         <div className="row py-lg-5">
           <div className="col-lg-6 col-md-8 mx-auto">
-            <h1 className="fw-light">ابحث في المئات الخدمات الالكترونية التي تحتاجها</h1>
+            <h1  className="introText">ابحث في  مئات الخدمات الالكترونية المقدمة</h1>
 
 
               <form onSubmit={(event)=>search(event)} className="mt-2 d-flex input-group">
-                <button className="btn btn-outline-success" type="submit">بحث</button>
+                <button className="btn btn-outline-success fa fa-search btn" type="submit"></button>
 
                 <input 
                 className="form-control me-2"
                 onChange={event=>setKeyWord(event.target.value)}
                 
-                type="search" placeholder="Search" aria-label="Search"></input>
+                type="search" placeholder="اسم الخدمة الالكترونية التي ترغب في انجازها" aria-label="Search"></input>
               </form>
           </div>
         </div>

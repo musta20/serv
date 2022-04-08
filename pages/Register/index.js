@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 
 import fetcher from '../../model/fetcher';
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default function profile(postData) {
     const [cookies, setCookie, removeCookie] = useCookies(['Jwt']);
@@ -78,7 +79,7 @@ export default function profile(postData) {
                 user_type: 3
             }
         })
-            .then(({data}) => {
+            .then(({ data }) => {
                 setIsLoding(false)
                 setCookie('Jwt', data.Jwt, { path: '/' });
                 setCookie('UserData', data.UserData, { path: '/' });
@@ -116,27 +117,45 @@ export default function profile(postData) {
                 <meta name="description" content=""></meta>
                 <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors"></meta>
                 <meta name="generator" content="Hugo 0.84.0"></meta>
+
                 <title>إنشاء حساب</title>
 
             </Head>
             <div className="bg-light">
-
+     
                 <div className="container">
                     <main>
+
+              
+
+
+
                         <div className="py-5 ">
 
+                 <span className='text-black d-flex justify-content-between'>
+                    <Link href='/login'>
+                        <div role='button'  >
+                               هل لديك حساب  ؟         
+                        <button className='mx-2 btn-sm btn btn-outline-success'> سجل الدخول </button></div>
 
+                    </Link>
+
+                    <Link href='/'>
+              <h5 role='button' className='mx-2 introText text-dark '>خدماتي</h5>
+
+              </Link>
+                </span>
                             <h2 className='text-center'>إنشاء حساب</h2>
 
                             <form onSubmit={Register} className="needs-validation form-signin" noValidate>
                                 <div className="row  g-3">
                                     <div className='alert-box '>
                                         <div
-                                        data-test='cy-Register-alert'
-                                         className={`alert alert-danger alert-dismissible fade ${!errors ? "" : 'show'} `}
+                                            data-test='cy-Register-alert'
+                                            className={`alert alert-danger alert-dismissible fade ${!errors ? "" : 'show'} `}
                                             role="alert">
-                                           <span>
-                                            {errors}
+                                            <span>
+                                                {errors}
                                             </span>
 
                                             <button type="button"
@@ -172,9 +191,9 @@ export default function profile(postData) {
 
                                                 type="number"
                                                 className={`form-control ${filederr.username ? 'is-invalid' : ''}`}
-                                                id="username" 
+                                                id="username"
                                                 onChange={event => event.target.value.length >= 10 ? '' : setUserName(event.target.value)}
-                                                placeholder="5xxxxxxxx" 
+                                                placeholder="5xxxxxxxx"
                                                 maxLength="9"
 
                                                 required>
@@ -226,7 +245,7 @@ export default function profile(postData) {
                                         data-test='cy-register-submit'
 
                                         className="w-100 btn btn-sm  btn-outline-success" type="submit">
-                                            
+
                                         {isLoding ?
                                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                             :
@@ -240,12 +259,12 @@ export default function profile(postData) {
 
                     </main>
                     <footer className=" text-muted text-center text-small">
-                        <p className="mb-1">&copy; 2021-2017 اسم الشركة</p>
-                        <ul className="list-inline">
-                            <li className="list-inline-item"><a href="#">سياسة الخصوصية</a></li>
-                            <li className="list-inline-item"><a href="#">اتفاقية الاستخدام</a></li>
-                            <li className="list-inline-item"><a href="#">الدعم الفني</a></li>
-                        </ul>
+                        <p className="mb-1">
+                            
+                        <p className="mb-1">Kadamate  2021 © </p>
+
+                        </p>
+                  
                     </footer>
                 </div>
 

@@ -216,7 +216,7 @@ export default function serv() {
     photoFormData.append("file", event.target.files[0]);
 
     axios({
-      url: 'http://127.0.0.1:8000/api/FileUpload',
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/FileUpload`,
       method: "post",
       data: photoFormData,
       headers: {

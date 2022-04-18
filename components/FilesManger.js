@@ -77,7 +77,7 @@ export default function FilesManger({ selection, returnSelected }) {
 
   const Download = (id, name) => {
     Axios({
-      url: `http://127.0.0.1:8000/api/downloadImge/${id}`,
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/downloadImge/${id}`,
       method: 'GET',
       responseType: 'blob', // Important
       headers: { "Authorization": "Bearer " + cookies.Jwt },

@@ -5,7 +5,7 @@ export default function  LoadImgeFile  ({ id }) {
     return <>{!id ? '' : <Image
       className="bd-placeholder-img card-img-top"
   
-      src={`http://127.0.0.1:8000/api/showPublicImge/${id}`}
+      src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/showPublicImge/${id}`}
       width={150}
       height={200}
   

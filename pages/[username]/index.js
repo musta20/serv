@@ -191,7 +191,7 @@ const LoadImgeFile = ({ id }) => {
 
 
   return <>{!id ? '' : <Image
-    src={`http://127.0.0.1:8000/api/showPublicImge/${id}`}
+    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/showPublicImge/${id}`}
     width={2000}
     height={400}
 

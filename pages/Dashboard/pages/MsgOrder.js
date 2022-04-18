@@ -149,7 +149,7 @@ export default function Msg({ ReqId, OrderId }) {
 
   const Download = (id, name) => {
     Axios({
-      url: `http://127.0.0.1:8000/api/getRequestImge/${id}`,
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/getRequestImge/${id}`,
       method: 'GET',
       responseType: 'blob', // Important
       headers: { "Authorization": "Bearer " + cookies.Jwt },

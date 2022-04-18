@@ -196,5 +196,5 @@ export default function Login(params) {
 }
 
 
-var srcf = async () => await axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie');
+var srcf = async () => await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}L/sanctum/csrf-cookie`);
 

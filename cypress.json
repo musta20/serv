@@ -3,7 +3,7 @@
     "viewportHeight": 1000,
     "viewportWidth": 1280,
     "env": {
-        "backendUrl": "http://127.0.0.1:8000",
+        "backendUrl": "http://process.env.NEXT_PUBLIC_BACKEND_URL",
         "mobileViewportWidthBreakpoint": 414
     }
 }

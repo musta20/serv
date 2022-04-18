@@ -12,6 +12,31 @@ import { useCookies } from 'react-cookie';
 
 const Index = ({ username, name, id, img_id, des }) => {
 
+
+  useEffect(() => {
+
+    if (typeof document !== undefined) {
+      require('bootstrap/dist/js/bootstrap')
+    }
+
+
+  }, [])
+
+  if(!username)
+  {
+    return <Layout >
+    <div className="album py-5 bg-light">
+    <div className="container py-5">
+
+      <div className="py-5 d-flex justify-content-center text-center text-algin-center text-success">
+        <h1><storage >404<br></br>الصفحة غير موجودة</storage></h1>
+
+      </div>
+    </div>
+  </div>
+  </Layout>
+  }
+
   const [isFollow, setIsFollow] = useState(null);
 
   const [cookies] = useCookies(['Jwt']);
@@ -24,6 +49,10 @@ const Index = ({ username, name, id, img_id, des }) => {
 
 
   useEffect(() => {
+
+    if (typeof document !== undefined) {
+      require('bootstrap/dist/js/bootstrap')
+    }
 
     setIsFollow(isuserFollow)
 
@@ -46,12 +75,6 @@ const Index = ({ username, name, id, img_id, des }) => {
   }
 
 
-  useEffect(() => {
-    if (typeof document !== undefined) {
-      require('bootstrap/dist/js/bootstrap')
-    }
-
-  }, [])
 
   return (
     <Layout >
@@ -93,16 +116,27 @@ const Index = ({ username, name, id, img_id, des }) => {
     </Layout>
   )
 }
-export async function getStaticProps({ params }) {
 
+export async function getStaticProps({ params }) {
+let props ={}
+try {
   const data = await userModle.User.findOne({ where: { username: params.username, user_type: 2 } })
-  const props = {
+   props = {
     username: data.dataValues.username,
     name: data.dataValues.name,
     id: data.dataValues.id,
     img_id: data.dataValues.img_id,
     des: data.dataValues.des,
   }
+  
+} catch (error) {
+
+  return {
+    props:{}
+  }
+  
+}
+
 
   return {
     props
@@ -133,6 +167,7 @@ const CheckisFollow = (id, Jwt) => {
 
 export async function getStaticPaths() {
 
+  
   const data = await userModle.User.findAll({ where: { user_type: 2 } })
   var path = []
   data.map(u => {

@@ -12,12 +12,8 @@ import { useEffect } from 'react';
 
 
 import useSWR from 'swr';
-import { useRouter } from 'next/router';
 
-export default function service(postData) {
-  const { services, isLoding, isErorr } = getRating(postData.id);
-
-  const router = useRouter();
+export default function service({id,thrparent,Description,Requirement,username,Title}) {
 
   useEffect(() => {
     if (typeof document !== undefined) {
@@ -25,6 +21,25 @@ export default function service(postData) {
     }
 
   }, [])
+  if(!Description)
+  {
+    return    <Layout >
+    <div className="album py-5 bg-light">
+    <div className="container py-5">
+
+      <div className="py-5 d-flex justify-content-center text-center text-algin-center text-success">
+        <h1><storage >404<br></br>الصفحة غير موجودة</storage></h1>
+
+      </div>
+    </div>
+  </div>
+  </Layout>
+  }
+  //const { services, isLoding, isErorr } = getRating(id);
+
+ // const router = useRouter();
+
+
 
   return (
     <Layout>
@@ -33,11 +48,11 @@ export default function service(postData) {
         <div className="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-2 text-start text-dark overflow-hidden">
           <div className="my-3 p-3">
             <div className='pb-3'>
-              {!postData.thrparent ? "" : postData.thrparent.reverse().map((cat, i) => <span key={cat.id} >{cat.Categories_Title}{postData.thrparent.length - 1 !== i ? ' > ' : ""}</span>)}
+              {!thrparent ? "" : thrparent.reverse().map((cat, i) => <span key={cat.id} >{cat.Categories_Title}{thrparent.length - 1 !== i ? ' > ' : ""}</span>)}
             </div>
 
-            <h2 className="display-5 d-flex">{postData.Title}</h2>
-            <p className="">{postData.Description}{postData.Description}{postData.Description}{postData.Description}</p>
+            <h2 className="display-5 d-flex">{Title}</h2>
+            <p className="">{Description}{Description}{Description}{Description}</p>
 
 
           </div>
@@ -45,14 +60,14 @@ export default function service(postData) {
         <div className="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-start text-dark overflow-hidden">
           <div className="">
             <h2 className="d-flex">متطلبات الخدمة</h2>
-            <p className="">{postData.Requirement}</p>
+            <p className="">{Requirement}</p>
 
           </div>
 
           <Link
             href={{
               pathname: '/[username]/[id]/request',
-              query: { username: postData.username, id: postData.id },
+              query: { username: username, id: id },
             }}
 
           >
@@ -73,15 +88,13 @@ export default function service(postData) {
 }
 
 export async function getStaticProps({ params }) {
-
-  const user = await userModle.User.findOne({ where: { username: params.username } });
-
-  const data = await servicesModle.Services.findOne({ where: { id: params.id, user_id: user.dataValues.id } })
-
-
+ let data,user,thrparent;
+  try {
+    
+  
+   user = await userModle.User.findOne({ where: { username: params.username } });
+   data = await servicesModle.Services.findOne({ where: { id: params.id, user_id: user.dataValues.id } })
   const catdata = await CatsModle.Cats.findAll();
-
-
   const cat = catdata.map(item => {
     return {
       id: item.dataValues.id,
@@ -95,9 +108,6 @@ export async function getStaticProps({ params }) {
   })
 
   const getCatParent = (MainCat, allparent) => {
-
-    console.log(MainCat)
-
     let parent = cat.find(item => MainCat.Parent_Categories == item.id)
     allparent.push(parent)
     if (parent.Parent_Categories !== 0) getCatParent(parent, allparent)
@@ -106,13 +116,15 @@ export async function getStaticProps({ params }) {
   }
   
   const thecatofthesservices = cat.find(cat => cat.id == data.dataValues.cat_id);
-
-  console.log(thecatofthesservices)
-  let thrparent = [thecatofthesservices]
+   thrparent = [thecatofthesservices]
   if (thecatofthesservices.Parent_Categories !== 0) {
     thrparent = getCatParent(thecatofthesservices, []);
   }
-
+}
+  catch (error) {
+    return {
+      props: {}}
+  }
   return {
     props: {
       id: data.dataValues.id,
@@ -159,7 +171,7 @@ export async function getStaticPaths(props) {
 
   let paths = [];
   data.map((u, i) => {
-    console.log(u)
+  //  console.log(u)
     return {
       params: {
 

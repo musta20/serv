@@ -6,10 +6,25 @@ import fetcher from "../../model/fetcher";
 import ServiceCard from "../../components/serviceCard"
 import ShowUl from "../../components/ShowUl";
 
-
-
 export default function Categorie({ MainCat, params, Cats }) {
 
+
+    if(!MainCat)
+    {
+      return <Layout >
+      <div className="album py-5 bg-light">
+      <div className="container py-5">
+  
+        <div className="py-5 d-flex justify-content-center text-center text-algin-center text-success">
+          <h1><storage >404<br></br>الصفحة غير موجودة</storage></h1>
+  
+        </div>
+      </div>
+    </div>
+    </Layout>
+    }
+  
+  
 
     const { services, isLoding, isErorr } = getServices(Cats);
 
@@ -24,6 +39,8 @@ export default function Categorie({ MainCat, params, Cats }) {
         //  console.log(allkidid)
 
     }, [])
+
+
 
 
     return (<Layout>
@@ -64,6 +81,9 @@ export default function Categorie({ MainCat, params, Cats }) {
 }
 
 export async function getStaticProps({ params }) {
+    try {
+        
+   
 
     const data = await CatsModle.Cats.findAll();
 
@@ -165,6 +185,14 @@ export async function getStaticProps({ params }) {
     return {
         props: { MainCat, params, parent, Cats }
     }
+
+} catch (error) {
+
+    return {
+        props:{}
+    }
+        
+}
 
 }
 

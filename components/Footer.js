@@ -4,12 +4,12 @@ export default function Footer() {
     <footer data-test='cy-global-footer' className="text-muted py-5 bg-success text-dark bg-opacity-75">
       <div className="container text-light">
 
-        <p className="float-end mb-1">
+        <div className="float-end mb-1">
           <h5 className='mx-2 introText text-light '>خدماتي</h5>
           <p className="mb-1">Kadamate  2021 © </p>
 
 
-        </p>
+        </div>
         <div className="row ">
           <div className="col">
           <div><p className="fs-6 m-1 btn btn-sm btn-outline-success border-0 text-light"> سياسة الخصوصية</p></div> 

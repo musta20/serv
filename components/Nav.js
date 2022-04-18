@@ -73,11 +73,9 @@ export default function Nav({ UserData, Jwt }) {
           <div className="row">
             <div className="col-sm-8 col-md-7 py-4">
               <h4 className="text-white">حول</h4>
-              <p className="">
                 <h5>
                   خدماتي - منصة إلكترونية تقدم للجمهور خدمة انجاز المعاملات الإلكترونية الحكومية وغير الحكومية بواسطة مكاتب معتمدة وموثوقة .
                 </h5>
-              </p>
             </div>
             <div className="col-sm-4 offset-md-1 py-4">
 
@@ -134,7 +132,7 @@ export default function Nav({ UserData, Jwt }) {
             </button>
 
             <h5 className='mx-2 introText text-light '>خدماتي</h5>
-
+<div>الموقع تحت التجربة فقط</div>
           </div>
 
 

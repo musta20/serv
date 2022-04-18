@@ -43,7 +43,6 @@ export default function orderPage(props) {
 
   useEffect(() => {
 
-
     if (typeof document !== undefined) {
       require('bootstrap/dist/js/bootstrap')
     }
@@ -232,6 +231,8 @@ export default function orderPage(props) {
               </div>
 
             </div>
+
+
             <div data-test='cy-file-order'>
               {!data ? '' : data.map((item, i) =>
                 <div key={i} className="col-sm-10 border w-75 p-2">
@@ -274,6 +275,10 @@ export default function orderPage(props) {
 
               )}
             </div>
+
+
+
+            
           </div>
 
 
@@ -335,8 +340,6 @@ export default function orderPage(props) {
   )
 }
 
-
-
 function RequirementUploader(id) {
 
   const { data, error } = useSWR({ url: '/api/RequirmenUploader', method: 'SHOW', data: { id } }, fetcher);
@@ -349,7 +352,6 @@ function RequirementUploader(id) {
   }
 }
 
-
 function getServices(id) {
 
   const { data, error } = useSWR({ url: '/api/services', method: 'SHOW', data: { id } }, fetcher);
@@ -361,7 +363,6 @@ function getServices(id) {
     errors: error
   }
 }
-
 
 const getFiles = (jwt) => {
   const { data, error } = useSWR({ url: '/api/FileUpload', method: 'GET', data: { Jwt: jwt } }, fetcher);

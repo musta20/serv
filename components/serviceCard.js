@@ -12,9 +12,7 @@ export default function ServiceCard({ Services }) {
       <div className="card-body">
         <p className="card-text">
           <strong >
-
             {Services.Title}
-
           </strong>
           <br></br>
           {Services.Description}

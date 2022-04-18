@@ -8,7 +8,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 export default function profile(postData) {
-    const [cookies, setCookie, removeCookie] = useCookies(['Jwt']);
+    const [cookies, setCookie] = useCookies(['Jwt']);
     const router = useRouter()
 
     const [UserName, setUserName] = useState('');

@@ -3,7 +3,7 @@ import fetcher from "../../../model/fetcher";
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/router';
-import { DashboardContext } from "./context";
+import { DashboardContext } from "../../../context/DashboardContext";
 import { useAuth } from "../../../model/hooks/auth"
 
 

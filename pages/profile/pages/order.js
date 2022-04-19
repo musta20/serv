@@ -3,7 +3,7 @@ import fetcher from "../../../model/fetcher";
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/router'
-import { ProfileContext } from "./context";
+import { ProfileContext } from "../../../context/Profilecontext";
 
 import Axios from 'axios'
 import FileDownload from 'js-file-download';

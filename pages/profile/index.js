@@ -7,7 +7,8 @@ import { useAuth } from '../../model/hooks/auth';
 import FilesManger from '../../components/FilesManger';
 
 import MessageBox from '../../components/MessageBox';
-import { ProfileContext } from './pages/context';
+import { ProfileContext } from '../../context/Profilecontext';
+
 import Link from 'next/link';
 
 

@@ -15,12 +15,12 @@ import Model from "../../../components/Model";
 import Axios from 'axios'
 import FileDownload from 'js-file-download';
 import MessageBox from "../../../components/MessageBox";
-import {DashboardContext} from "./context"
+import { DashboardContext } from "../../../context/DashboardContext"
 
 export default function Msg({ ReqId, OrderId }) {
 
 
-  const { setthispage } = useContext(DashboardContext);
+  const { setMainPage } = useContext(DashboardContext);
 
   const [isLoding, setIsLoding] = useState(true);
   const [AlertMesssage, setAlertMesssage] = useState([null, ""])
@@ -127,7 +127,7 @@ export default function Msg({ ReqId, OrderId }) {
 
       document.documentElement.scrollTop = 0
       setTimeout(() => {
-        setthispage('order')
+        setMainPage('order')
       }, 1000);
 
 
@@ -198,7 +198,7 @@ export default function Msg({ ReqId, OrderId }) {
       document.documentElement.scrollTop = 0
 
       setTimeout(() => {
-        setthispage('order')
+        setMainPage('order')
       }, 1000);
 
 

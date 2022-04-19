@@ -10,7 +10,7 @@ import Services from './pages/services';
 import { useAuth } from '../../model/hooks//auth';
 import Link from 'next/link';
 import Msg from './pages/MsgOrder';
-import { DashboardContext } from './pages/context'
+import { DashboardContext } from '../../context/DashboardContext'
 
 
 export default function profile(postData) {

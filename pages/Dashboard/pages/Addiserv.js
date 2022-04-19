@@ -186,10 +186,11 @@ export default function serv() {
     let newarr = [...requpl];
 
     let ddv = newarr.find(item => item[0] == e[0])
-    console.log(ddv)
+    //console.log(ddv)
     let indexval = newarr.indexOf(ddv);
+//console.log(newarr[indexval])
+    newarr[indexval][1] ? newarr[indexval][1] = false : newarr[indexval][1]= true;
 
-    newarr[indexval][1] = true
     setrequpl(newarr)
 
   }
@@ -554,7 +555,7 @@ const IsReaquired = ({setrequired , req , i})=>{
   <input className="form-check-input"
   onChange={(e)=>setrequired(req)}
   type="checkbox" 
-  checked={req[1]}
+  checked={req[1] ? true : false}
 
   value="" id={`flexCheckDefault${i}`}></input>
   <label className="form-check-label" htmlFor={`flexCheckDefault${i}`}>

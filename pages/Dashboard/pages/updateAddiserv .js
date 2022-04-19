@@ -11,7 +11,7 @@ import Image from 'next/image'
 import FilesManger from "../../../components/FilesManger";
 
 
-export default function Serv({ upid }) {
+export default function Serv({ serviceId }) {
   const [cookies] = useCookies(['Jwt']);
   const [requpl, setrequpl] = useState([]);
   const [reqval, setreqval] = useState('');
@@ -37,7 +37,7 @@ export default function Serv({ upid }) {
   }
   
   const { files } = getFiles(cookies.Jwt);
-  const { servdata } = LoadServ(upid);
+  const { servdata } = LoadServ(serviceId);
   const [Title, setTitle] = useState('');
   const [Description, setDescription] = useState('');
   const [Requirement, setRequirement] = useState('');
@@ -193,7 +193,7 @@ export default function Serv({ upid }) {
     if (!reqval) return
 
     let newarr = [...requpl];
-    newarr.push(reqval);
+    newarr.push([reqval,false]);
 
     setrequpl(newarr)
     setreqval('')
@@ -217,8 +217,9 @@ export default function Serv({ upid }) {
     let ddv = newarr.find(item => item[0] == e[0])
     console.log(ddv)
     let indexval = newarr.indexOf(ddv);
+    newarr[indexval][1] ? newarr[indexval][1] = false : newarr[indexval][1]= true;
 
-    newarr[indexval][1] = true
+    //newarr[indexval][1] = true
     setrequpl(newarr)
 
   }

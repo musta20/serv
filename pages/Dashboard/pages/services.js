@@ -92,16 +92,16 @@ export default function serv({ updateService }) {
                 onClick={() => updateService(serv.id)}
                 type="button" className="btn  btn-sm btn-outline-secondary">تعديل</button>
 
-              <a onClick={() => setselectDlete(serv.id)}
+              <button onClick={() => setselectDlete(serv.id)}
                 data-bs-toggle="modal"
                 data-bs-target="#staticBackdropLive"
-                type="button" className="btn btn-sm btn-outline-secondary">حذف</a>
+                type="button" className="btn btn-sm btn-outline-secondary">حذف</button>
 
             </div>
           </div>
 
         )}
-      <Model id={selectDlete} msg={'هل انت متاكد من حذف العنصر'} DeleteServ={deleteServ}></Model>
+      <Model ModelId={"staticBackdropLive"} id={selectDlete} msg={'هل انت متاكد من حذف العنصر'} DeleteServ={deleteServ}></Model>
     </div>
 
   )

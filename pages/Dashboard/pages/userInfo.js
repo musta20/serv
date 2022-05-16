@@ -150,7 +150,7 @@ export default function infoUser() {
   const { user, isInfoLoding } = getMyInfo(cookies.Jwt);
 
   useEffect(() => {
-    console.log(AlertMesssage)
+    //console.log(AlertMesssage)
     if (user) {
       setname(user.name)
       setphone(user.phone)
@@ -394,8 +394,8 @@ const getFiles = (jwt) => {
 }
 
 const InputType = ({ img_id, uploadFile, removeImge, allimges }) => {
-  console.log(allimges)
-  console.log(img_id)
+  //console.log(allimges)
+ // console.log(img_id)
   if (allimges !== undefined) {
     if (img_id) {
       const { imge } = allimges[allimges.findIndex(item => item.id == img_id)]

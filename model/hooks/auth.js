@@ -29,16 +29,7 @@ export const useAuth = ({ onlyAdmin, setloadPageData } = {}) => {
         if(!UserData && router.pathname == '/login') return;
 
         if(onlyAdmin == null && !(UserData && router.pathname == '/login')) return;
-/////////////trur  break
-///////////////// true and true 
-       // {
-           //if(UserData.user_type !== 2) return router.push('/profile')
-           //router.push('/Dashboard')
-           //return
-        //}
 
-        console.log('THIS BITSH ACUSLE WORK')
-        console.log(UserData)
         if ((onlyAdmin || onlyAdmin==null) && UserData.user_type !== 2) {
 
             router.push('/profile')
@@ -47,7 +38,7 @@ export const useAuth = ({ onlyAdmin, setloadPageData } = {}) => {
         }
 
         if (!onlyAdmin && UserData.user_type == 2) {
-            console.log('GO TO DASHBOARD')
+          //  console.log('GO TO DASHBOARD')
 
             router.push('/Dashboard')
             return
@@ -58,7 +49,7 @@ export const useAuth = ({ onlyAdmin, setloadPageData } = {}) => {
 
     const ReSetSession = async () => {
 
-        console.log('ReSetSession')
+     //   console.log('ReSetSession')
 
         await csrf()
 

@@ -44,7 +44,7 @@ export default function requestpage(props) {
     if (typeof document !== undefined) {
       require('bootstrap/dist/js/bootstrap')
     }
-    console.log(router.query)
+   // console.log(router.query)
 
 
     const updateForm = []
@@ -57,7 +57,7 @@ export default function requestpage(props) {
       
      // console.log(orimg)
       
-      console.log(item)
+    //  console.log(item)
       
       updateForm[i] = { 
 
@@ -82,7 +82,7 @@ export default function requestpage(props) {
 
   const closeMdeol = () => {
 
-    console.log(FormFiles)
+   // console.log(FormFiles)
 
     const updatFile = FormFiles.findIndex(item => item.input == Files.input)
 

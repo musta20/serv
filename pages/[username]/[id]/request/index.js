@@ -30,7 +30,7 @@ export default function orderPage(props) {
   const { serv } = getServices(router.query.id)
 
   const handelimgeselection = (id) => {
-    console.log(id)
+   // console.log(id)
 
     if (currentFile !== 0 && id !== 0) {
 
@@ -85,7 +85,7 @@ export default function orderPage(props) {
     }).then(ret => {
 
       files.push(ret.file)
-      console.log(FormFiles)
+    //  console.log(FormFiles)
       const updatFile = FormFiles.findIndex(item => item.input == inputid)
 
       const newupdateForm = [...FormFiles]
@@ -356,7 +356,7 @@ function getServices(id) {
 
   const { data, error } = useSWR({ url: '/api/services', method: 'SHOW', data: { id } }, fetcher);
 
-  console.log(data)
+ // console.log(data)
   return {
     serv: data,
     isLoding: !data && !error,

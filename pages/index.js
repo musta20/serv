@@ -93,7 +93,7 @@ if(!nodata) return "no data"
 
 function getServices() {
   const { data, error } = useSWR({ url: '/api/services', method: 'GET', data: {} }, fetcher);
-  console.log(data)
+ // console.log(data)
   const page = !data || !{ data } ? [] : data.data
   return {
     services: page,

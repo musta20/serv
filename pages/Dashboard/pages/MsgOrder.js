@@ -92,8 +92,7 @@ export default function Msg({ ReqId, OrderId }) {
       }
 
     }).then(ret => {
-      console.log('retretretretretretretretretretret')
-      console.log(ret.file.id)
+    //  console.log(ret.file.id)
       setEndimg(ret.file.id)
     })
 
@@ -132,7 +131,7 @@ export default function Msg({ ReqId, OrderId }) {
 
 
     }).catch(e => {
-      console.log(e)
+      //console.log(e)
       event.target.setAttribute("data-bs-dismiss", "modal");
 
 
@@ -163,7 +162,7 @@ export default function Msg({ ReqId, OrderId }) {
       document.documentElement.scrollTop = 0;
 
     }).catch(err => {
-      console.log(err)
+      //console.log(err)
       setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0;
     });
@@ -204,7 +203,7 @@ export default function Msg({ ReqId, OrderId }) {
 
 
     }).catch(e => {
-      console.log(e)
+      //console.log(e)
       event.target.setAttribute("data-bs-dismiss", "modal");
 
 
@@ -372,7 +371,7 @@ const OrderImgeData = (id, jwt) => {
 
 const getFiles = (id, Jwt) => {
   const { data, error } = useSWR({ url: '/api/GetFilsForReq', method: 'SHOW', data: { id: id, Jwt: Jwt } }, fetcher);
-  console.log(data)
+  //console.log(data)
   return {
     files: data,
     isLoding: !data && !error,

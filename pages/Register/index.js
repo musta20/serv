@@ -54,7 +54,7 @@ export default function profile(postData) {
         if (!PassWord) cc.password = "كلمة المرور مطلوبه "
         if (!rePassWord) cc.repassword = "إعادة كلمة المرور مطلوبه"
 
-        console.log(cc)
+        //console.log(cc)
         setFiledsErrors(cc)
 
 

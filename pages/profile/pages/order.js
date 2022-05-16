@@ -50,8 +50,8 @@ export default function order() {
 
 
   const Download = (id, name) => {
-    console.log(id)
-    console.log(name)
+    //console.log(id)
+    //console.log(name)
     Axios({
       url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/downloadImge/${id}`,
       method: 'GET',
@@ -67,7 +67,7 @@ export default function order() {
       document.documentElement.scrollTop = 0;
 
     }).catch(err => {
-      console.log(err)
+      //console.log(err)
       //  setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0;
     });

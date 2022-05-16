@@ -66,7 +66,7 @@ export default function FilesManger({ selection, returnSelected }) {
 
       })
       .catch(e => {
-        console.log(e)
+      //  console.log(e)
         setAlertMesssage([false, e.response.data])
         document.documentElement.scrollTop = 0;
       })
@@ -91,7 +91,7 @@ export default function FilesManger({ selection, returnSelected }) {
       document.documentElement.scrollTop = 0;
 
     }).catch(err => {
-      console.log(err)
+     // console.log(err)
       setAlertMesssage([false, 'حدث خطاء الرجاء المحاولة لاحقا'])
       document.documentElement.scrollTop = 0;
     });
@@ -119,7 +119,7 @@ export default function FilesManger({ selection, returnSelected }) {
 
 
     }).catch(err => {
-      console.log(err.response)
+    //  console.log(err.response)
       try {
         setAlertMesssage([false, Object.values(err.response.data.errors).flat()])
 

@@ -105,7 +105,7 @@ export default function Serv({ serviceId }) {
       setselectedCat(servdata.cat_id)
       setcurrentImge(servdata.img_id)
 
-      console.log(servdata.requpl)
+      //console.log(servdata.requpl)
 
       if (servdata.requpl) setrequpl(servdata.requpl.map(upreq => [upreq.Title_upload, upreq.is_required ? true : false]))
 
@@ -211,11 +211,11 @@ export default function Serv({ serviceId }) {
 
   const setrequired = (e) => {
 
-    console.log(requpl)
+   // console.log(requpl)
     let newarr = [...requpl];
 
     let ddv = newarr.find(item => item[0] == e[0])
-    console.log(ddv)
+  //  console.log(ddv)
     let indexval = newarr.indexOf(ddv);
     newarr[indexval][1] ? newarr[indexval][1] = false : newarr[indexval][1]= true;
 
@@ -244,7 +244,7 @@ export default function Serv({ serviceId }) {
   }
 
   const selectcatforserv = (event) => {
-    console.log(event.target.value)
+    //console.log(event.target.value)
 
   }
 
@@ -473,8 +473,8 @@ const getFiles = (jwt) => {
 }
 
 const InputType = ({ img_id, uploadFile, removeImge, allimges }) => {
-  console.log(allimges)
-  console.log(img_id)
+ // console.log(allimges)
+ // console.log(img_id)
   if (allimges !== undefined) {
     if (img_id) {
       const { imge } = allimges[allimges.findIndex(item => item.id == img_id)]

@@ -175,7 +175,7 @@ const showOreders = (data, ordertype) => {
 
 const getRequest = (jwt) => {
   const { data, error } = useSWR({ url: '/api/Request', method: 'GET', data: { Jwt: jwt } }, fetcher);
-  console.log(data)
+  //console.log(data)
   return {
     data: data,
     isLoding: !data && !error,

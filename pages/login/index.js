@@ -56,7 +56,7 @@ export default function Login(params) {
       })
       .catch(err => {
         setIsLoding(false)
-       // console.log(err)
+        console.log(err)
         setErros(err.response.data)
         // setErros(Object.values(err.response.data).flat())
 

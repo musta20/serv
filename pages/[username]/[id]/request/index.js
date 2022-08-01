@@ -75,6 +75,9 @@ export default function orderPage(props) {
 
     photoFormData.append("file", event.target.files[0]);
 
+    console.log('OROPSE THE photoFormData')
+    console.log(event.target.files[0])
+    console.log(photoFormData)
 
     await fetcher({
       url: '/api/FileUpload', method: "POST_FILE", data: {
